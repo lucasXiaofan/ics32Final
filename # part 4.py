@@ -15,6 +15,10 @@ from tkinter import ttk, filedialog
 from Profile import Post
 from NaClProfile import NaClProfile
 
+# lucas
+# ics 32 final project
+
+
 """
 A subclass of tk.Frame that is responsible for drawing all of the widgets
 in the body portion of the root frame.
