@@ -10,7 +10,7 @@
 
 import json
 from collections import namedtuple
-import ds_client
+import part2
 
 DataTuple = namedtuple('DataTuple', ['token', 'message']) # stored for easy access for client module to utilize
 
