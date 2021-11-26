@@ -92,14 +92,12 @@ class Profile:
 
     """
 
-    def __init__(self, dsuserver=None, username=None, password=None, zipcode=None, ccode=None):
+    def __init__(self, dsuserver=None, username=None, password=None):
         self.dsuserver = dsuserver # REQUIRED
         self.username = username # REQUIRED
         self.password = password # REQUIRED
         self.bio = ''            # OPTIONAL
-        self._posts = []        # OPTIONAL
-        self.zipcode = zipcode
-        self.ccode = ccode
+        self._posts = []         # OPTIONAL
     
     """
 
@@ -186,8 +184,6 @@ class Profile:
                 self.password = obj['password']
                 self.dsuserver = obj['dsuserver']
                 self.bio = obj['bio']
-                self.zipcode = obj['zipcode']
-                self.ccode = obj['ccode']
                 for post_obj in obj['_posts']:
                     post = Post(post_obj['entry'], post_obj['timestamp'])
                     self._posts.append(post)
@@ -196,4 +192,3 @@ class Profile:
                 raise DsuProfileError(ex)
         else:
             raise DsuFileError()
-

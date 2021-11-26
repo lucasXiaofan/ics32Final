@@ -1,3 +1,4 @@
 print('part 3 - Hassan')
 
-print('part 3 features only')
+from Profile import Profile
+
