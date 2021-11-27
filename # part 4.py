@@ -11,9 +11,10 @@
 
 
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import Text, ttk, filedialog
+from tkinter.constants import BOTH
 from Profile import Post
-from NaClProfile import NaClProfile
+#from NaClProfile import NaClProfile
 
 # lucas
 # ics 32 final project
@@ -113,22 +114,40 @@ class Body(tk.Frame):
         self.posts_tree.bind("<<TreeviewSelect>>", self.node_select)
         self.posts_tree.pack(fill=tk.BOTH, side=tk.TOP, expand=True, padx=5, pady=5)
 
-        entry_frame = tk.Frame(master=self, bg="")
-        entry_frame.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
+        
+        
+        entry_frame = tk.Frame(master=self, bg="blue",height=100,width=500)
+        entry_frame.pack( side = tk.BOTTOM, expand=True,pady = 0,padx=5)
+
+        receive_frame = tk.Frame(master=self, bg="green",height=335,width=500)
+        receive_frame.pack( side = tk.TOP, expand=True,pady = 0)
+
+        entry_text = tk.Text(master=entry_frame, height=5,width=70) # this height is so tricky
+        entry_text.pack(side=tk.BOTTOM,expand = False)
+        '''
+        self.entry_editor = tk.Text(entry_frame,height=100,width=500)
+        self.entry_editor.pack(side=tk.BOTTOM, expand=False)
         
         editor_frame = tk.Frame(master=entry_frame, bg="red")
-        editor_frame.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+        editor_frame.pack(fill=tk.BOTH, side=tk.TOP, expand=True,padx=0, pady=5)#>>>>>>>>>>>>>>>>>>>>>>>>>>>
+        
+        text_frame = tk.Frame(master = entry_frame , bg='green',height=100)
+        text_frame.pack(fill=tk.BOTH, side=tk.BOTTOM, expand=False,padx=0, pady=0)
+
         
         scroll_frame = tk.Frame(master=entry_frame, bg="blue", width=10)
         scroll_frame.pack(fill=tk.BOTH, side=tk.LEFT, expand=False)
-        
-        self.entry_editor = tk.Text(editor_frame, width=0)
-        self.entry_editor.pack(fill=tk.BOTH, side=tk.LEFT, expand=True, padx=0, pady=0)
 
+        text_box = tk.Text(text_frame)
+        text_box.pack(padx = 5, pady = 5)
+        
+        self.entry_editor = tk.Text(text_frame, width=0)
+        self.entry_editor.pack(fill=tk.BOTH, side=tk.BOTTOM, expand=False, padx=0, pady=0)
+       
         entry_editor_scrollbar = tk.Scrollbar(master=scroll_frame, command=self.entry_editor.yview)
         self.entry_editor['yscrollcommand'] = entry_editor_scrollbar.set
         entry_editor_scrollbar.pack(fill=tk.Y, side=tk.LEFT, expand=False, padx=0, pady=0)
-
+        '''
 """
 A subclass of tk.Frame that is responsible for drawing all of the widgets
 in the footer portion of the root frame.
@@ -176,16 +195,12 @@ class Footer(tk.Frame):
     Call only once upon initialization to add widgets to the frame
     """
     def _draw(self):
-        save_button = tk.Button(master=self, text="Save Post", width=20)
+        save_button = tk.Button(master=self, text="Send", width=20)
         save_button.configure(command=self.save_click)
         save_button.pack(fill=tk.BOTH, side=tk.RIGHT, padx=5, pady=5)
 
-        self.chk_button = tk.Checkbutton(master=self, text="Online", variable=self.is_online)
-        self.chk_button.configure(command=self.online_click) 
-        self.chk_button.pack(fill=tk.BOTH, side=tk.RIGHT)
-
         self.footer_label = tk.Label(master=self, text="Ready.")
-        self.footer_label.pack(fill=tk.BOTH, side=tk.LEFT, padx=5)
+        self.footer_label.pack(fill=tk.BOTH, side=tk.RIGHT, padx=5)
 
 """
 A subclass of tk.Frame that is responsible for drawing all of the widgets
@@ -198,7 +213,7 @@ class MainApp(tk.Frame):
         self.root = root
 
         # Initialize a new NaClProfile and assign it to a class attribute.
-        self._current_profile = NaClProfile()
+        #self._current_profile = NaClProfile()
 
         # After all initialization is complete, call the _draw method to pack the widgets
         # into the root frame
@@ -261,6 +276,14 @@ class MainApp(tk.Frame):
             self.footer.set_status("Online")
         else:
             self.footer.set_status("Offline")
+
+    # for collecting the ip, username, passwords from user
+    def configure_account():
+        pass
+
+    # add user by username 
+    def add_friends():
+        pass
     
     """
     Call only once, upon initialization to add widgets to root frame
@@ -272,15 +295,23 @@ class MainApp(tk.Frame):
         menu_file = tk.Menu(menu_bar)
         menu_bar.add_cascade(menu=menu_file, label='File')
         menu_file.add_command(label='New', command=self.new_profile)
+        menu_file.add_separator()
         menu_file.add_command(label='Open...', command=self.open_profile)
+        menu_file.add_separator()
         menu_file.add_command(label='Close', command=self.close)
         # NOTE: Additional menu items can be added by following the conventions here.
         # The only top level menu item is a 'cascading menu', that presents a small menu of
         # command items when clicked. But there are others. A single button or checkbox, for example,
         # could also be added to the menu bar. 
+        menu_setting = tk.Menu(menu_bar)
+        menu_bar.add_cascade(menu= menu_setting,label = 'Setting')
+        menu_setting.add_command(label='New', command=self.configure_account)
+        menu_setting.add_separator()
+        menu_setting.add_command(label='Open...', command=self.add_friends)
+        
 
         # The Body and Footer classes must be initialized and packed into the root window.
-        self.body = Body(self.root, self._current_profile)
+        self.body = Body(self.root)
         self.body.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
         
         # TODO: Add a callback for detecting changes to the online checkbox widget in the Footer class. Follow
@@ -294,7 +325,7 @@ if __name__ == "__main__":
     main = tk.Tk()
 
     # 'title' assigns a text value to the Title Bar area of a window.
-    main.title("ICS 32 Distributed Social Demo")
+    main.title("ICS 32 Final Project")
 
     # This is just an arbitrary starting point. You can change the value around to see how
     # the starting size of the window changes. I just thought this looked good for our UI.
