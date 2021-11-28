@@ -11,8 +11,8 @@
 
 
 import tkinter as tk
-from tkinter import Text, ttk, filedialog
-from tkinter.constants import BOTH
+from tkinter import Button, Entry, Label, StringVar, Text, Toplevel, ttk, filedialog
+from tkinter.constants import BOTH, RADIOBUTTON, RIGHT, TRUE
 from Profile import Post
 #from NaClProfile import NaClProfile
 
@@ -104,50 +104,49 @@ class Body(tk.Frame):
         
         self.posts_tree.insert('', id, id, text=entry)
     
+    
+        #self.message_widget.config(text = "send successfully")
+    
     """
     Call only once upon initialization to add widgets to the frame
     """
     def _draw(self):
+        
         posts_frame = tk.Frame(master=self, width=250)
         posts_frame.pack(fill=tk.BOTH, side=tk.LEFT)
         self.posts_tree = ttk.Treeview(posts_frame)
         self.posts_tree.bind("<<TreeviewSelect>>", self.node_select)
         self.posts_tree.pack(fill=tk.BOTH, side=tk.TOP, expand=True, padx=5, pady=5)
 
-        
-        
-        entry_frame = tk.Frame(master=self, bg="blue",height=100,width=500)
-        entry_frame.pack( side = tk.BOTTOM, expand=True,pady = 0,padx=5)
+        entry_frame = tk.Frame(master=self, bg="black",height = 120 )
+        entry_frame.pack(fill=tk.BOTH, side=tk.BOTTOM,pady =5,padx = 5)
 
-        receive_frame = tk.Frame(master=self, bg="green",height=335,width=500)
-        receive_frame.pack( side = tk.TOP, expand=True,pady = 0)
+        msg_post_frame = tk.Frame(master=self, bg="red" )
+        msg_post_frame.pack(fill=tk.BOTH, side=tk.TOP,expand = True, pady =5,padx = 5)
 
-        entry_text = tk.Text(master=entry_frame, height=5,width=70) # this height is so tricky
-        entry_text.pack(side=tk.BOTTOM,expand = False)
-        '''
-        self.entry_editor = tk.Text(entry_frame,height=100,width=500)
-        self.entry_editor.pack(side=tk.BOTTOM, expand=False)
-        
-        editor_frame = tk.Frame(master=entry_frame, bg="red")
-        editor_frame.pack(fill=tk.BOTH, side=tk.TOP, expand=True,padx=0, pady=5)#>>>>>>>>>>>>>>>>>>>>>>>>>>>
-        
-        text_frame = tk.Frame(master = entry_frame , bg='green',height=100)
-        text_frame.pack(fill=tk.BOTH, side=tk.BOTTOM, expand=False,padx=0, pady=0)
+        scroll_frame = tk.Frame(master=msg_post_frame, bg="blue", width=10)
+        scroll_frame.pack( fill = tk.BOTH, side=tk.RIGHT, expand=False)
 
-        
-        scroll_frame = tk.Frame(master=entry_frame, bg="blue", width=10)
-        scroll_frame.pack(fill=tk.BOTH, side=tk.LEFT, expand=False)
+        scroll_frame_entry = tk.Frame(master=entry_frame, bg="blue", width=10)
+        scroll_frame_entry.pack( fill = tk.BOTH, side=tk.RIGHT, expand=False)
 
-        text_box = tk.Text(text_frame)
-        text_box.pack(padx = 5, pady = 5)
+        self.entry_box = tk.Text(entry_frame,height=5)# where to type in message
+        self.entry_box.pack(fill=BOTH, side = tk.BOTTOM, expand = False)
+
+        self.message_widget = tk.Text(msg_post_frame,bg = 'white',height = 0,state = 'disabled') #where display the message
+        self.message_widget.pack(fill = BOTH,side = tk.TOP,expand = True )
+    
+        entry_scrollbar = tk.Scrollbar(master=scroll_frame, command=self.message_widget.yview)#scrollbar in text widget
+        self.message_widget['yscrollcommand'] = entry_scrollbar.set
+        entry_scrollbar.pack(fill=tk.Y, side=tk.RIGHT, expand=True, padx=0, pady=0)
         
-        self.entry_editor = tk.Text(text_frame, width=0)
-        self.entry_editor.pack(fill=tk.BOTH, side=tk.BOTTOM, expand=False, padx=0, pady=0)
-       
-        entry_editor_scrollbar = tk.Scrollbar(master=scroll_frame, command=self.entry_editor.yview)
-        self.entry_editor['yscrollcommand'] = entry_editor_scrollbar.set
+        entry_editor_scrollbar = tk.Scrollbar(master=scroll_frame_entry, command=self.entry_box.yview)#scrollbar in text widget
+        self.entry_box['yscrollcommand'] = entry_editor_scrollbar.set
         entry_editor_scrollbar.pack(fill=tk.Y, side=tk.LEFT, expand=False, padx=0, pady=0)
-        '''
+    
+#--------------------------------send button ------------------------------------------------------>>
+
+
 """
 A subclass of tk.Frame that is responsible for drawing all of the widgets
 in the footer portion of the root frame.
@@ -194,13 +193,21 @@ class Footer(tk.Frame):
     """
     Call only once upon initialization to add widgets to the frame
     """
+
+    def send_message(self):
+        pass
+
+        
     def _draw(self):
         save_button = tk.Button(master=self, text="Send", width=20)
-        save_button.configure(command=self.save_click)
+        save_button.configure(command=self.send_message)
         save_button.pack(fill=tk.BOTH, side=tk.RIGHT, padx=5, pady=5)
 
         self.footer_label = tk.Label(master=self, text="Ready.")
         self.footer_label.pack(fill=tk.BOTH, side=tk.RIGHT, padx=5)
+
+
+
 
 """
 A subclass of tk.Frame that is responsible for drawing all of the widgets
@@ -278,8 +285,31 @@ class MainApp(tk.Frame):
             self.footer.set_status("Offline")
 
     # for collecting the ip, username, passwords from user
-    def configure_account():
-        pass
+    def configure_account(self):
+        account_screen = Toplevel(self.root)
+        account_screen.title('Configure Account')
+        account_screen.geometry("300x250")
+
+        DS_Server_Address = StringVar()
+        Username = StringVar()
+        Password = StringVar()
+
+        Label(account_screen,text='DS Server Address').pack()
+        Entry(account_screen,textvariable=DS_Server_Address ).pack()
+
+        Label(account_screen,text='Username').pack()
+        Entry(account_screen,textvariable=Username ).pack()
+
+        Label(account_screen,text='Password').pack()
+        Entry(account_screen,textvariable=Password ).pack()
+
+        Button(account_screen,text = "Ok", width= 15, 
+            height=1).pack(side=tk.LEFT,pady = 5, padx =5)
+        Button(account_screen,text = "cancel", width= 15, 
+            height=1).pack(side=tk.RIGHT,pady = 5, padx =5)
+
+
+
 
     # add user by username 
     def add_friends():
@@ -305,9 +335,9 @@ class MainApp(tk.Frame):
         # could also be added to the menu bar. 
         menu_setting = tk.Menu(menu_bar)
         menu_bar.add_cascade(menu= menu_setting,label = 'Setting')
-        menu_setting.add_command(label='New', command=self.configure_account)
+        menu_setting.add_command(label='Configure Account', command=self.configure_account)
         menu_setting.add_separator()
-        menu_setting.add_command(label='Open...', command=self.add_friends)
+        menu_setting.add_command(label='Add Friends', command=self.add_friends)
         
 
         # The Body and Footer classes must be initialized and packed into the root window.
