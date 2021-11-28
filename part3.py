@@ -1,26 +1,51 @@
 print('part 3 - Hassan')
 
-from json.decoder import JSONDecodeError
 import time
-#from Profile import Profile
-import json
+import Profile
 
-FILE = 'part3_test_file.json'
-
-
-def init_json():
-    #  This function is called whenever the JSON file is completely empty, it will put a "{}" 
-    # inside which will then able to be read as an empty JSON file
-    
-    with open(FILE, 'w') as f:
-        json.dump({}, f)
+# Global variable that stores the current profile in use
+_current_profile = Profile.Profile()
+_current_path = ''
 
 
-def get_data():
-    # TODO: Rather than reading a file to get the data, use the Profile module to serialize new data (in form of JSON object)
-    
-    with open(FILE, 'r') as f:
-        return json.load(f)
+
+def create_profile(file_path, username=None, password=None, bio='', dsuserver=None):
+    """Creates a profile using the Profile class."""
+    global _current_profile  # Global variable
+    _current_profile = Profile.Profile(dsuserver, username, password)
+    _current_profile.bio = bio
+
+    global _current_path
+    _current_path = file_path  # This stores the file path into the global variable to be used in other functions
+
+
+def clear_profile():
+    """Clears the previous profile when loading in a new one."""
+    global _current_profile
+    _current_profile = Profile.Profile(dsuserver=None, username=None, password=None)
+    _current_profile.bio = ''
+    _current_profile._posts = []
+    _current_profile.contacts = {}
+
+
+def load_profile(file_path):
+    """Loads a profile from a DSU file using the Profile class."""
+    clear_profile()  # Clears the current profile so that the new profile could be loaded
+    _current_profile.load_profile(file_path)
+
+    global _current_path
+    _current_path = file_path
+
+
+def save_profile():
+    """Saves a profile into a DSU file using the Profile class."""
+    global _current_profile
+    _current_profile.save_profile(_current_path)
+
+
+
+
+
 
 def texting_interface(user_1, user_2) -> list:
     #  TEST INTERFACE (Not using this code)
@@ -51,10 +76,6 @@ def texting_interface(user_1, user_2) -> list:
                 new_contact_messages.append(user_2.get_message(inp))
     return new_contact_messages
 
-def store_data(contacts):
-    # TODO: Rather than writing to a file to store data, use the Profile module to store the data somehow
-       with open(FILE, 'w') as f:
-           json.dump(contacts, f)
 
 def display_text(contacts):
     for k, v in contacts.items():
@@ -68,7 +89,6 @@ def create_message(timestamp, is_sent, text='') -> dict:
     return {'timestamp': timestamp, 'is_sent': is_sent, 'text': text}
 
 
-
 class User:
     def __init__(self, username, password):
         self.username = username
@@ -78,38 +98,41 @@ class User:
         return create_message(timestamp=int(time.time()), is_sent=True, text=text)
 
 
-
 class OtherUser:
     def __init__(self, username):
         self.username = username
-    
+
     def get_message(self, text) -> dict:
         return create_message(timestamp=int(time.time()), is_sent=False, text=text)
 
 
 def main():
-    try:
-        data = get_data()
-    except JSONDecodeError:  # the JSON file is empty
-        init_json()
-        data = get_data()
-    display_text(data)
+    file_path = '/Users/mac/Desktop/profiles/test.dsu'
+
+    load_profile(file_path)
+
+    print(_current_profile.contacts)
+
+    contacts = _current_profile.contacts
+    display_text(contacts)
     
-    username = 'hassan'
-    password = '1234'
+
     other_username = input('Enter the contact username:\n')
+    username = 'hassan'
+    password = 'password'
     user_1 = User(username, password)
     user_2 = OtherUser(other_username)
 
     new_contact_messages = texting_interface(user_1, user_2)
-    contacts = data
 
     if user_2.username in contacts:
         contacts[user_2.username].extend(new_contact_messages)
     else:
         contacts[user_2.username] = new_contact_messages
 
-    store_data(contacts)
+    _current_profile.contacts = contacts
+    save_profile()
+
     display_text(contacts)
 
 
