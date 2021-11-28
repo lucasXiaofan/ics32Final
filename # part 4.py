@@ -283,36 +283,68 @@ class MainApp(tk.Frame):
             self.footer.set_status("Online")
         else:
             self.footer.set_status("Offline")
+            
+#-------------------------------------configure account screen---------------------------------->>
+    def ok_login(self): #TODO for final project
+        pass
+
+    def cancel(self):
+        self.account_screen.destroy()
+#-------------------------------------configure account screen---------------------------------->>
+
+#-------------------------------------add friend screen----------------------------------------->>
+    def ok_add_f(self): #TODO for final project
+        pass
+
+    def cancel_a_f(self):
+        self.add_f_screen.destroy()
+#-------------------------------------add friend screen----------------------------------------->>
 
     # for collecting the ip, username, passwords from user
     def configure_account(self):
-        account_screen = Toplevel(self.root)
-        account_screen.title('Configure Account')
-        account_screen.geometry("300x250")
+        self.account_screen = Toplevel(self.root)
+        self.account_screen.title('Configure Account')
+        self.account_screen.geometry("250x180") # width x height
 
-        DS_Server_Address = StringVar()
-        Username = StringVar()
-        Password = StringVar()
+        self.DS_Server_Address = StringVar()
+        self.Username = StringVar()
+        self.Password = StringVar()
 
-        Label(account_screen,text='DS Server Address').pack()
-        Entry(account_screen,textvariable=DS_Server_Address ).pack()
+        Label(self.account_screen,text='DS Server Address').pack()
+        Entry(self.account_screen,textvariable=self.DS_Server_Address ).pack()
 
-        Label(account_screen,text='Username').pack()
-        Entry(account_screen,textvariable=Username ).pack()
+        Label(self.account_screen,text='Username').pack()
+        Entry(self.account_screen,textvariable=self.Username ).pack()
 
-        Label(account_screen,text='Password').pack()
-        Entry(account_screen,textvariable=Password ).pack()
+        Label(self.account_screen,text='Password').pack()
+        Entry(self.account_screen,textvariable=self.Password ).pack()
 
-        Button(account_screen,text = "Ok", width= 15, 
-            height=1).pack(side=tk.LEFT,pady = 5, padx =5)
-        Button(account_screen,text = "cancel", width= 15, 
-            height=1).pack(side=tk.RIGHT,pady = 5, padx =5)
-
-
+        Button(self.account_screen,text = "Ok", width= 15, 
+            height=1,
+            command= self.ok_login).pack(side=tk.LEFT,pady = 5, padx =5)
+        Button(self.account_screen,text = "cancel", width= 15, 
+            height=1,
+            command = self.cancel).pack(side=tk.RIGHT,pady = 5, padx =5)
 
 
     # add user by username 
-    def add_friends():
+    def add_friends(self):
+        self.add_f_screen = Toplevel(self.root)
+        self.add_f_screen.title("Add a friend")
+        self.add_f_screen.geometry("250x100")
+
+        self.cont_name = StringVar()
+
+        Label(self.add_f_screen,text='Please type the username of your new contact').pack()
+        Entry(self.add_f_screen,textvariable=self.cont_name ).pack()
+
+        Button(self.add_f_screen,text = "Ok", width= 15, 
+            height=1,
+            command= self.ok_add_f).pack(side=tk.LEFT,pady = 5, padx =5)
+
+        Button(self.add_f_screen,text = "cancel", width= 15, 
+            height=1,
+            command = self.cancel_a_f).pack(side=tk.RIGHT,pady = 5, padx =5)
         pass
     
     """
