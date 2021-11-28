@@ -94,8 +94,8 @@ def main():
         init_json()
         data = get_data()
     display_text(data)
-
-    username = 'ha'
+    
+    username = 'hassan'
     password = '1234'
     other_username = input('Enter the contact username:\n')
     user_1 = User(username, password)
