@@ -12,7 +12,6 @@ import json
 import Profile
 
 
-
 def send(server:str, port:int, username:str, password:str, message:str, bio:str=None):
   '''
   The send function joins a ds server and sends a message, bio, or both
