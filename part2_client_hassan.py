@@ -1,7 +1,3 @@
-# Hassan Al-Najjar
-# hhalnajj@uci.edu
-# 67882437
-
 import socket
 import ds_protocol
 import time
