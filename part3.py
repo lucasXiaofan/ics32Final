@@ -8,6 +8,10 @@ _current_profile = Profile.Profile()
 _current_path = ''
 
 
+def create_path(filename):
+    with open(filename, 'x') as f:
+        pass
+
 
 def create_profile(file_path, username=None, password=None, bio='', dsuserver=None):
     """Creates a profile using the Profile class."""
@@ -43,11 +47,66 @@ def save_profile():
     _current_profile.save_profile(_current_path)
 
 
+def display_profile(p):
+    correct_password = _current_profile.password
+    if p == correct_password:
+        print('access granted')
+        contacts = _current_profile.contacts
+        for key, value in contacts.items():
+            print(key, value)
+
+    else:
+        print('access denied')
+
+
+
+def main():
+    username = 'hassan'
+    password = '1234'
+
+    file_path = f'profiles/{username}.dsu'
+    try:
+        load_profile(file_path)
+    except Profile.DsuFileError:  # Path doesn't exist (new user)
+        create_path(file_path)
+        _current_profile.username = username
+        _current_profile.password = password
+        _current_profile.save_profile(file_path)
+
+    display_profile(password)
+
+    '''
+    load_profile(file_path)
+
+    print(_current_profile.contacts)
+
+    contacts = _current_profile.contacts
+    display_text(contacts)
+    
+
+    other_username = input('Enter the contact username:\n')
+    username = 'hassan'
+    password = 'password'
+    user_1 = User(username, password)
+    user_2 = OtherUser(other_username)
+
+    new_contact_messages = texting_interface(user_1, user_2)
+
+    if user_2.username in contacts:
+        contacts[user_2.username].extend(new_contact_messages)
+    else:
+        contacts[user_2.username] = new_contact_messages
+
+    _current_profile.contacts = contacts
+    save_profile()
+
+    display_text(contacts)'''
 
 
 
 
-def texting_interface(user_1, user_2) -> list:
+
+'''def texting_interface(user_1, user_2) -> list:
     #  TEST INTERFACE (Not using this code)
     # This list stores all the messages sent by a contact
     new_contact_messages = []
@@ -103,37 +162,8 @@ class OtherUser:
         self.username = username
 
     def get_message(self, text) -> dict:
-        return create_message(timestamp=int(time.time()), is_sent=False, text=text)
+        return create_message(timestamp=int(time.time()), is_sent=False, text=text)'''
 
-
-def main():
-    file_path = '/Users/mac/Desktop/profiles/test.dsu'
-
-    load_profile(file_path)
-
-    print(_current_profile.contacts)
-
-    contacts = _current_profile.contacts
-    display_text(contacts)
-    
-
-    other_username = input('Enter the contact username:\n')
-    username = 'hassan'
-    password = 'password'
-    user_1 = User(username, password)
-    user_2 = OtherUser(other_username)
-
-    new_contact_messages = texting_interface(user_1, user_2)
-
-    if user_2.username in contacts:
-        contacts[user_2.username].extend(new_contact_messages)
-    else:
-        contacts[user_2.username] = new_contact_messages
-
-    _current_profile.contacts = contacts
-    save_profile()
-
-    display_text(contacts)
 
 
 if __name__ == '__main__':
