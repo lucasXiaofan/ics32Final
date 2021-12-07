@@ -1,26 +1,15 @@
-print('part 3 - Hassan')
+#part 3 - Hassan'
 
 import time
 import Profile
 
 # Global variable that stores the current profile in use
 _current_profile = Profile.Profile()
-_current_path = ''
 
 
 def create_path(filename):
     with open(filename, 'x') as f:
         pass
-
-
-def create_profile(file_path, username=None, password=None, bio='', dsuserver=None):
-    """Creates a profile using the Profile class."""
-    global _current_profile  # Global variable
-    _current_profile = Profile.Profile(dsuserver, username, password)
-    _current_profile.bio = bio
-
-    global _current_path
-    _current_path = file_path  # This stores the file path into the global variable to be used in other functions
 
 
 def clear_profile():
@@ -37,32 +26,23 @@ def load_profile(file_path):
     clear_profile()  # Clears the current profile so that the new profile could be loaded
     _current_profile.load_profile(file_path)
 
-    global _current_path
-    _current_path = file_path
 
+def display_profile():
+    for key, value in _current_profile.contacts.items():
+        print(key, value)
 
-def save_profile():
-    """Saves a profile into a DSU file using the Profile class."""
-    global _current_profile
-    _current_profile.save_profile(_current_path)
-
-
-def display_profile(p):
-    correct_password = _current_profile.password
-    if p == correct_password:
-        print('access granted')
-        contacts = _current_profile.contacts
-        for key, value in contacts.items():
-            print(key, value)
-
-    else:
-        print('access denied')
-
+def check_password(p) -> bool:
+    '''Returns True if the given password is equal to the profile's password.'''
+    return p == _current_profile.password
 
 
 def main():
-    username = 'hassan'
-    password = '1234'
+    print('Configure account:')
+    username = 'username1'  # CHANGE VALUE
+    password = 'password'  # CHANGE VALUE
+
+    logged_in = False
+    
 
     file_path = f'profiles/{username}.dsu'
     try:
@@ -73,98 +53,31 @@ def main():
         _current_profile.password = password
         _current_profile.save_profile(file_path)
 
-    display_profile(password)
-
-    '''
-    load_profile(file_path)
-
-    print(_current_profile.contacts)
-
-    contacts = _current_profile.contacts
-    display_text(contacts)
-    
-
-    other_username = input('Enter the contact username:\n')
-    username = 'hassan'
-    password = 'password'
-    user_1 = User(username, password)
-    user_2 = OtherUser(other_username)
-
-    new_contact_messages = texting_interface(user_1, user_2)
-
-    if user_2.username in contacts:
-        contacts[user_2.username].extend(new_contact_messages)
+    if check_password(password):
+        print('ACCESS GRANTED')
+        logged_in = True
+        display_profile()
     else:
-        contacts[user_2.username] = new_contact_messages
-
-    _current_profile.contacts = contacts
-    save_profile()
-
-    display_text(contacts)'''
-
-
-
-
-
-'''def texting_interface(user_1, user_2) -> list:
-    #  TEST INTERFACE (Not using this code)
-    # This list stores all the messages sent by a contact
-    new_contact_messages = []
-
-    user_1_bool = True
-    while True:
-        if user_1_bool:
-            inp = input('Enter text, User 1: (type \'c\' to change users)\n')
+        print('ACCESS DENIED')
+    
+    if logged_in:
+        other_user = 'otheruser'  # CHANGE VALUE
+        messages = [{'text': 'hello',}, {'text': 'whats up',}]  # Arbitrary configuration of the message format
+        
+        if other_user not in _current_profile.contacts:
+            # If the username isn't in contacts
+            _current_profile.contacts[other_user] = messages
         else:
-            inp = input('Enter text, User 2: (type \'c\' to change users)\n')
+            # If there already are messages for an existing user, then do 
+            _current_profile.contacts[other_user].extend(messages)
 
-        if inp == 'q':
-            print('quit')
-            break
-
-        # 'c' doesnt work for some reason?
-        if inp == 'c' and user_1_bool == True:
-            user_1_bool = False
-        elif inp == 'c' and user_1_bool == False:
-            user_1_bool = True
-
-        else:
-            if user_1_bool:
-                new_contact_messages.append(user_1.send_message(inp))
-            else:
-                new_contact_messages.append(user_2.get_message(inp))
-    return new_contact_messages
-
-
-def display_text(contacts):
-    for k, v in contacts.items():
-        print(f'\n{k}:')
-        for message in v:
-            print(message)
-    # Make it so it displays all contacts
-
-
-def create_message(timestamp, is_sent, text='') -> dict:
-    return {'timestamp': timestamp, 'is_sent': is_sent, 'text': text}
-
-
-class User:
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-
-    def send_message(self, text) -> dict:
-        return create_message(timestamp=int(time.time()), is_sent=True, text=text)
-
-
-class OtherUser:
-    def __init__(self, username):
-        self.username = username
-
-    def get_message(self, text) -> dict:
-        return create_message(timestamp=int(time.time()), is_sent=False, text=text)'''
-
-
+        _current_profile.save_profile(file_path)
+        display_profile()
+    
 
 if __name__ == '__main__':
     main()
+
+
+# TODO: Test if there are any errors when there is nothing in the 
+# messaging text editor but still send the message
