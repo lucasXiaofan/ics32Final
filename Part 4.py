@@ -13,7 +13,7 @@
 import tkinter as tk
 from tkinter import Button, Entry, Label, StringVar, Text, Toplevel, ttk, filedialog
 from tkinter.constants import BOTH, END, RADIOBUTTON, RIGHT, TRUE
-from Profile import Post
+import Profile
 #from NaClProfile import NaClProfile
 
 # lucas
@@ -31,7 +31,7 @@ class Body(tk.Frame):
         self._select_callback = select_callback
 
         # a list of the Post objects available in the active DSU file
-        self._posts = [Post]
+        self._posts = [Profile.Post]
         
         # After all initialization is complete, call the _draw method to pack the widgets
         # into the Body instance 
@@ -75,7 +75,7 @@ class Body(tk.Frame):
     """
     Inserts a single post to the post_tree widget.
     """
-    def insert_post(self, post: Post):
+    def insert_post(self, post: Profile.Post):
         self._posts.append(post)
         id = len(self._posts) - 1 #adjust id for 0-base of treeview widget
         self._insert_post_tree(id, post)
@@ -95,7 +95,7 @@ class Body(tk.Frame):
     """
     Inserts a post entry into the posts_tree widget.
     """
-    def _insert_post_tree(self, id, post: Post):
+    def _insert_post_tree(self, id, post: Profile.Post):
         entry = post.entry
 
         if len(entry) > 25:
@@ -218,14 +218,34 @@ class MainApp(tk.Frame):
     """
     Creates a new DSU file when the 'New' menu item is clicked.
     """
-    def new_profile(self):
-        filename = tk.filedialog.asksaveasfile(filetypes=[('Distributed Social Profile', '*.dsu')])
-        profile_filename = filename.name
+#----------------------------------------------new profile--------------------------#
+    """
+    After user click the 'ok' in configure account 
+    1.go to the user_exist_checker to check whether the usrname is taken
+    2.if taken go to open_profile
+    3.if not taken, go to new_profile 
+    """
+    def user_exist_checker(self,usr):
+        self.file_path = f'{usr}.dsu' #usr = the self.username
+        try:
+            self.create_path(self.file_path)
+            self.new_profile()
+        except Exception:
+            print("open_profile")
 
-        # TODO Write code to perform whatever operations are necessary to prepare the UI for
-        # a new DSU file.
-        # HINT: You will probably need to do things like generate encryption keys and reset the ui.
-    
+    def create_path(self,file_path):
+            with open(file_path,'x') as f:
+                pass
+
+    def new_profile(self):
+
+        self.New_user_profile = Profile.Profile()
+        self.New_user_profile.save_profile(self.file_path)
+        print('called')
+        
+
+        
+#----------------------------------------------new profile--------------------------#
     """
     Opens an existing DSU file when the 'Open' menu item is clicked and loads the profile
     data into the UI.
@@ -253,7 +273,12 @@ class MainApp(tk.Frame):
             
 #-------------------------------------configure account screen---------------------------------->>
     def ok_login(self): #TODO for final project
-        pass
+        self.dsu_server = str(self.DS_Server_Address.get())
+        self.username =str(self.Username.get())
+        self.password = str(self.Password.get())
+        self.user_exist_checker(self.username)
+        self.account_screen.destroy()
+        
 
     def cancel(self):
         self.account_screen.destroy()
