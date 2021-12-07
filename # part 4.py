@@ -242,9 +242,6 @@ class MainApp(tk.Frame):
         self.New_user_profile = Profile.Profile()
         self.New_user_profile.save_profile(self.file_path)
         print('called')
-        
-
-        
 #----------------------------------------------new profile--------------------------#
     """
     Opens an existing DSU file when the 'Open' menu item is clicked and loads the profile
