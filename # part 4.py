@@ -14,7 +14,6 @@ import tkinter as tk
 from tkinter import Button, Entry, Label, StringVar, Text, Toplevel, ttk, filedialog
 from tkinter.constants import BOTH, END, RADIOBUTTON, RIGHT, TRUE
 import Profile
-from part3 import check_password
 #from NaClProfile import NaClProfile
 
 # lucas
