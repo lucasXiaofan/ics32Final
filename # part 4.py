@@ -14,6 +14,7 @@ import tkinter as tk
 from tkinter import Button, Entry, Label, StringVar, Text, Toplevel, ttk, filedialog
 from tkinter.constants import BOTH, END, RADIOBUTTON, RIGHT, TRUE
 import Profile
+from part3 import check_password
 #from NaClProfile import NaClProfile
 
 # lucas
@@ -226,48 +227,68 @@ class MainApp(tk.Frame):
     3.if not taken, go to new_profile 
     """
     def user_exist_checker(self,usr):
-        self.file_path = f'{usr}.dsu' #usr = the self.username
+        self.file_path = f'profiles/{usr}.dsu' #usr = the self.username
         try:
             self.create_path(self.file_path)
-            self.new_profile()
-        except Exception:
-            print("open_profile")
+            self.create_new_profile()
+        except FileExistsError:
+            self.load_profile()
 
     def create_path(self,file_path):
-            with open(file_path,'x') as f:
-                pass
+        """Creates a file in the profiles folder for storing Profile data."""
+        with open(file_path,'x') as f:
+            pass
 
-    def new_profile(self):
-
-        self.New_user_profile = Profile.Profile()
-        self.New_user_profile.save_profile(self.file_path)
+    def create_new_profile(self):
+        self.user_profile = Profile.Profile()
+        self.user_profile.dsuserver = self.dsu_server
+        self.user_profile.username = self.username
+        self.user_profile.password = self.password
+        self.save_profile()
         print('called')
 #----------------------------------------------new profile--------------------------#
     """
     Opens an existing DSU file when the 'Open' menu item is clicked and loads the profile
     data into the UI.
     """
-    def open_profile(self):
-        filename = tk.filedialog.askopenfile(filetypes=[('Distributed Social Profile', '*.dsu')])
+    def load_profile(self):
+        self.clear_profile()  # Clears the current profile so that the new profile could be loaded
+        self.user_profile.load_profile(self.file_path)  # Sets all the profile attributes to the self.user_profile object
+        if self.check_password(self.password):  # Passes in the password the user entered in the tkinter entry widget
+            print('ACCESS GRANTED')
+            #logged_in = True?
+            # Show all the contacts saved in the profile
+        else:
+            print('ACCESS DENIED')  #  Wrong passwrod
 
-        # TODO: Write code to perform whatever operations are necessary to prepare the UI for
-        # an existing DSU file.
-        # HINT: You will probably need to do things like load a profile, import encryption keys 
-        # and update the UI with posts.
+
+    def clear_profile(self):
+        """Clears the previous profile when loading in a new one."""
+        self.user_profile = Profile.Profile(dsuserver=None, username=None, password=None)
+        self.user_profile.bio = ''
+        self.user_profile._posts = []
+        self.user_profile.contacts = {}
     
+
+    def check_password(self, password) -> bool:
+        """Returns True if the given password is equal to the profile's password.
+        """
+        return password == self.user_profile.password
+
+    """
+    Saves the text currently in the entry_editor widget to the active DSU file.
+    """
+    def save_profile(self):
+        self.user_profile.save_profile(self.file_path)
+
+
     """
     Closes the program when the 'Close' menu item is clicked.
     """
     def close(self):
         self.root.destroy()
 
-    """
-    Saves the text currently in the entry_editor widget to the active DSU file.
-    """
-    def save_profile(self):
 
-        pass
-            
 #-------------------------------------configure account screen---------------------------------->>
     def ok_login(self): #TODO for final project
         self.dsu_server = str(self.DS_Server_Address.get())
@@ -343,9 +364,9 @@ class MainApp(tk.Frame):
         self.root['menu'] = menu_bar
         menu_file = tk.Menu(menu_bar)
         menu_bar.add_cascade(menu=menu_file, label='File')
-        menu_file.add_command(label='New', command=self.new_profile)
+        menu_file.add_command(label='New', command=self.create_new_profile)
         menu_file.add_separator()
-        menu_file.add_command(label='Open...', command=self.open_profile)
+        menu_file.add_command(label='Open...', command=self.load_profile)
         menu_file.add_separator()
         menu_file.add_command(label='Close', command=self.close)
         menu_setting = tk.Menu(menu_bar)
