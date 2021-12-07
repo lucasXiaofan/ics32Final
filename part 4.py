@@ -151,22 +151,31 @@ A subclass of tk.Frame that is responsible for drawing all of the widgets
 in the footer portion of the root frame.
 """
 class Footer(tk.Frame):
-    def __init__(self, root, save_callback=None):
+    def __init__(self, root, night_mode_callback=None, save_callback=None):
         tk.Frame.__init__(self, root)
         self.root = root
+        self.night_mode_callback = night_mode_callback
         self._save_callback = save_callback
         self.is_online = tk.IntVar()
+        # IntVar is a variable class that provides access to special variables
+        # for Tkinter widgets. is_online is used to hold the state of the chk_button widget.
+        # The value assigned to self.is_night when the chk_button widget is changed by the user
+        # can be retrieved using the get() function:
+        # chk_value = self.is_night.get()
+        self.is_night = tk.IntVar()
+        # After all initialization is complete, call the _draw method to pack the widgets
+        # into the Footer instance 
         self._draw()
     
     """
     Calls the callback function specified in the online_callback class attribute, if
     available, when the chk_button widget has been clicked.
     """
-    def online_click(self):
-        # TODO: Add code that implements a callback to the chk_button click event.
-        # The callback should support a single parameter that contains the value
-        # of the self.is_online widget variable.
-        pass
+    def night_mode_click(self):
+        if self.is_night.get() == 1:  # Night mode enabled
+            self.night_mode_callback(True)
+        else:  # Night mode disabled
+            self.night_mode_callback(False)
 
     """
     Calls the callback function specified in the save_callback class attribute, if
@@ -195,6 +204,10 @@ class Footer(tk.Frame):
         save_button.configure(command=self.send_message)
         save_button.pack(fill=tk.BOTH, side=tk.RIGHT, padx=5, pady=5)
 
+        self.chk_button = tk.Checkbutton(master=self, text="Night Mode", variable=self.is_night)
+        self.chk_button.configure(command=self.night_mode_click) 
+        self.chk_button.pack(fill=tk.BOTH, side=tk.RIGHT)
+
         self.footer_label = tk.Label(master=self, text="Ready.")
         self.footer_label.pack(fill=tk.BOTH, side=tk.RIGHT, padx=5)
 
@@ -213,6 +226,7 @@ class MainApp(tk.Frame):
         self.username = ''
         self.password=""
         self.dsu_server=''
+        self.is_night_mode = False
         self._draw()
 
     """
@@ -356,6 +370,15 @@ class MainApp(tk.Frame):
             command = self.cancel_a_f).pack(side=tk.RIGHT,pady = 5, padx =5)
         pass
     
+    """
+    A callback function for responding to changes to the night mode button.
+    """
+    def night_mode_changed(self, value:bool):
+        self.is_night_mode = True
+        if value:
+            print('NIGHT MODE')
+        else:
+            print('NIGHT')
 
     def _draw(self):
         # Build a menu and add it to the root frame.
@@ -377,7 +400,7 @@ class MainApp(tk.Frame):
         self.body = Body(self.root)
         self.body.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
 
-        self.footer = Footer(self.root, save_callback=self.save_profile)
+        self.footer = Footer(self.root, night_mode_callback=self.night_mode_changed, save_callback=self.save_profile)
         self.footer.pack(fill=tk.BOTH, side=tk.BOTTOM)
 
 if __name__ == "__main__":
