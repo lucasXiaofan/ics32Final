@@ -310,7 +310,7 @@ class MainApp(tk.Frame):
         self.dsu_server = str(self.DS_Server_Address.get())
         self.username =str(self.Username.get())
         self.password = str(self.Password.get())
-        self.mess
+        self.messgener.join(username= self.username, password=self.password )
         self.user_exist_checker(self.username)
         self.body.set_contact_msg(self.user_profile.contacts)#<<<<<<<<<<<<<<<<<<<<<<<<<,
         self.account_screen.destroy()

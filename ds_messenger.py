@@ -28,7 +28,7 @@ class DirectMessenger:
     self.token = None
     
 
-  def join(self, dsuserver, username, password) -> str:
+  def join(self, username, password) -> str:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client: # opening socket stream
       client.connect((server, port)) # connects to server and port passed to send function
     
