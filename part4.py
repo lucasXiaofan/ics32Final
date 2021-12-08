@@ -139,7 +139,7 @@ class Body(tk.Frame):
         self.entry_box = tk.Text(entry_frame,height=5, bg= bg_color, fg=fg_color)# where to type in message
         self.entry_box.pack(fill=BOTH, side = tk.BOTTOM, expand = False)
 
-        self.message_widget = tk.Text(msg_post_frame,height = 0, bg= bg_color, state = 'disabled')  # where display the message
+        self.message_widget = tk.Text(msg_post_frame,height = 0, bg= bg_color, fg = fg_color, state = 'disabled')  # where display the message
         self.message_widget.pack(fill = BOTH,side = tk.TOP,expand = True )
     
         entry_scrollbar = tk.Scrollbar(master=scroll_frame, command=self.message_widget.yview)#scrollbar in text widget
