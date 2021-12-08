@@ -33,13 +33,13 @@ class DirectMessenger:
     self.message = message
     self.timestamp = Profile.time.time()
     try:
-      direct_msg = '{"token": "' + self.token + '"directmessage": {"entry":"' + self.message + '", "recipient": "' + self.recipient + '", "timestamp": "' + str(self.timestamp) + '"}}' # posts user's desired message
+      direct_msg = '{"token": "' + dm.token + '", "directmessage": {"entry":"' + self.message + '", "recipient": "' + self.recipient + '", "timestamp": "' + str(self.timestamp) + '"}}' # posts user's desired message
       response = True
+      send.write(direct_msg + '\r\n')
+      send.flush() #cant leave anything behind 
     except:
       response = False
     finally:
-      send.write(direct_msg + '\r\n')
-      send.flush() #cant leave anything behind 
       respo = recv.readline()
 
     return response
@@ -52,8 +52,9 @@ class DirectMessenger:
     send.flush() #cant leave anything behind 
     respo = recv.readline()
     new_msg1.append(respo)
+    stringthing = part1_protocol.extract_json(new_msg1)
     
-    return new_msg1
+    return stringthing
 
   def retrieve_all(self) -> list:
     # returns a list of DirectMessage objects containing all messages
@@ -82,11 +83,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client: # opening sock
 
       respo = recv.readline()
       print(respo)
-      new_token = part1_protocol.extract_json(respo) # grabs token from join respon
+     # new_token = part1_protocol.extract_json(respo)[0] # grabs token from join respon
       dm = DirectMessenger()
-      dm.token = new_token
+      dm.token = "31292afb-8505-4421-b112-e18bc0938642"
+
+      DirectMessenger.retrieve_all(DirectMessenger)
+      DirectMessenger.retrieve_new(DirectMessenger)
+
+
       DirectMessenger.send(DirectMessenger, "hello WWKKWKEK", "unittestwork")
-      print(DirectMessenger.retrieve_all(DirectMessenger))
-      print(DirectMessenger.retrieve_new(DirectMessenger))
 
       break
