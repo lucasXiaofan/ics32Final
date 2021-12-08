@@ -10,7 +10,6 @@
 
 import json
 from collections import namedtuple
-import part2_client
 import ds_messenger
 
 response_list = []
