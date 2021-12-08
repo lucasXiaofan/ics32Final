@@ -43,7 +43,7 @@ def extract_json(json_msg:str): # helps get important information from response
   except json.JSONDecodeError:
     print("Json cannot be decoded.")
 
-  return response_list # easy to use in client module, if i need just message or just token 
+  return user_token, response_list # easy to use in client module, if i need just message or just token 
 
   
 
