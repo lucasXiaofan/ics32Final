@@ -12,6 +12,15 @@ import json
 import Profile
 
 
+#directmessage 
+#{"token":"user_token", "directmessage": {"entry": "Hello World!","recipient":"ohhimark", "timestamp": "1603167689.3928561"}}
+
+#unread message
+#{"token":"user_token", "directmessage": "new"}
+
+#all messages
+#{"token":"user_token", "directmessage": "all"}
+
 
 def send(server:str, port:int, username:str, password:str, message:str, bio:str=None):
   '''
@@ -54,10 +63,10 @@ def send(server:str, port:int, username:str, password:str, message:str, bio:str=
         
       else:
         pass
+      
+      direct_msg = '{"token": "' + str(new_token) + '", "directmessage": {"entry":"' + str(message) + '", "recipient": "' + user_to_send + '", "timestamp": "' + str(Profile.time.time()) + '"}}' # posts user's desired message
 
-      msg = '{"token": "' + str(new_token) + '", "post": {"entry":"' + str(message) + '", "timestamp": "' + str(Profile.time.time()) + '"}}' # posts user's desired message
-
-      send.write(msg + '\r\n')
+      send.write(direct_msg + '\r\n')
       send.flush()
       srv_msg = recv.readline()
       part1_protocol.extract_json(srv_msg).message # prints confirmation message 
@@ -72,3 +81,5 @@ def bio_function(bio, new_token):
   bio_post = '{"token":"' + str(new_token) + '", "bio": {"entry": "' + str(bio) + '","timestamp": "' + str(Profile.time.time()) + '"}}' #to post a bio with a post
 
   return bio_post
+
+
