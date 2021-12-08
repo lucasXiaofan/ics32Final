@@ -14,6 +14,7 @@ import tkinter as tk
 from tkinter import Button, Entry, Label, StringVar, Text, Toplevel, ttk, filedialog
 from tkinter.constants import BOTH, END, RADIOBUTTON, RIGHT, TRUE
 import Profile
+from ds_messenger import DirectMessenger
 #from NaClProfile import NaClProfile
 
 # lucas
@@ -30,7 +31,7 @@ class Body(tk.Frame):
         self.root = root
         self.night_mode = night_mode
         self._select_callback = select_callback
-
+        self.contact_name = None # for send check, if None, message will send to default messgener. 
         self._name = []
         self._body_contact = {}# because the call back doesn't work
         # After all initialization is complete, call the _draw method to pack the widgets
@@ -207,6 +208,8 @@ class MainApp(tk.Frame):
     def __init__(self, root):
         tk.Frame.__init__(self, root)
         self.user_profile = Profile.Profile() # for final project
+        self.messgener = DirectMessenger(dsuserver="168.235.86.101",username="xiaof",password="1234") # without any setting
+        
         self.root = root
         self.username = ''
         self.password=""
@@ -275,20 +278,21 @@ class MainApp(tk.Frame):
         """
         return password == self.user_profile.password
 
-    """
-    Saves the text currently in the entry_editor widget to the active DSU file.
-    """
-
-            
-            
 
     def save_profile(self):
         self.user_profile.save_profile(self.file_path)
 
     def send_message_to_server(self): # callback to footer, so when user click send, the msg in entry will send to 
         #message widget
+        if self.body.contact_name is None:# if none send messenger to yourself
+            self.recipient = 'xiaof' # for testing purpose, default contact name
+        else:
+            self.recipient = self.body.contact_name
         print(self.body.get_text_entry())
-        print(self.body.contact_name,' ')
+        print(self.body.contact_name ,"current contact name")
+        self.messgener.send(self.body.get_text_entry(),self.recipient)
+        #for test purpose
+        print("line 294 see if message come in",self.messgener.retrieve_all())
         self.body.set_text_entry('')
 
 
@@ -304,6 +308,7 @@ class MainApp(tk.Frame):
         self.dsu_server = str(self.DS_Server_Address.get())
         self.username =str(self.Username.get())
         self.password = str(self.Password.get())
+        self.mess
         self.user_exist_checker(self.username)
         self.body.set_contact_msg(self.user_profile.contacts)#<<<<<<<<<<<<<<<<<<<<<<<<<,
         self.account_screen.destroy()
@@ -383,8 +388,6 @@ class MainApp(tk.Frame):
         self.body.pack_forget()
         self.footer.pack_forget()
         self._draw()
-
-
 
     def _draw(self):
         # Build a menu and add it to the root frame.
