@@ -47,24 +47,23 @@ class DirectMessenger:
 		
   def retrieve_new(self) -> list:
     # returns a list of DirectMessage objects containing all new messages
-    new_msg = '{"token": "31292afb-8505-4421-b112-e18bc0938642", "directmessage": "new" }'
+    new_msg = '{"token": "' + dm.token + '", "directmessage": "new" }'
     send.write(new_msg + '\r\n')
     send.flush() #cant leave anything behind 
     respo = recv.readline()
-    new_msg1.append(respo)
-    stringthing = part1_protocol.extract_json(new_msg1)
+    stringthing = part1_protocol.extract_json(respo)
     
     return stringthing
 
   def retrieve_all(self) -> list:
     # returns a list of DirectMessage objects containing all messages
-    all_msg = '{"token": "31292afb-8505-4421-b112-e18bc0938642", "directmessage": "all" }'
+    all_msg = '{"token": "' + dm.token + '", "directmessage": "all" }'
     send.write(all_msg + '\r\n')
     send.flush() #cant leave anything behind 
     respo = recv.readline()
-    all_msg1.append(respo)
+    stringything = part1_protocol.extract_json(respo)
     
-    return all_msg1
+    return stringything[1]
 
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client: # opening socket stream
@@ -75,22 +74,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client: # opening sock
 
     print('client connected to', server,'on', port) # confirmation to user
 
-    while True:
-      json_msg = '{"join": {"username": "unittestwork" ,"password": "hellowrodl1223", "token": ""}}' 
+    json_msg = '{"join": {"username": "unittestwork" ,"password": "hellowrodl1223", "token": ""}}' 
         
-      send.write(json_msg + '\r\n')
-      send.flush() #cant leave anything behind 
+    send.write(json_msg + '\r\n')
+    send.flush() #cant leave anything behind 
 
-      respo = recv.readline()
-      print(respo)
-     # new_token = part1_protocol.extract_json(respo)[0] # grabs token from join respon
-      dm = DirectMessenger()
-      dm.token = "31292afb-8505-4421-b112-e18bc0938642"
+    respo = recv.readline()
+    dm = DirectMessenger()
+    dm.token = part1_protocol.extract_json(respo)[0]
 
-      DirectMessenger.retrieve_all(DirectMessenger)
-      DirectMessenger.retrieve_new(DirectMessenger)
-
-
-      DirectMessenger.send(DirectMessenger, "hello WWKKWKEK", "unittestwork")
-
-      break
+    DirectMessenger.send(DirectMessenger, "non-intentional error", "unittestwork")
+    DirectMessenger.retrieve_all(DirectMessenger)
+    DirectMessenger.retrieve_new(DirectMessenger)
