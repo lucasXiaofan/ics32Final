@@ -275,6 +275,7 @@ class MainApp(tk.Frame):
     data into the UI.
     """
     def load_profile(self):
+        self.clear_ui()
         self.clear_profile()  # Clears the current profile so that the new profile could be loaded
         self.user_profile.load_profile(self.file_path)  # Sets all the profile attributes to the self.user_profile object
         if self.check_password(self.password):  # Passes in the password the user entered in the tkinter entry widget
@@ -394,10 +395,13 @@ class MainApp(tk.Frame):
         else:
             self.is_night_mode = 1
 
+        self.clear_ui()
+        
+    def clear_ui(self):
         self.body.pack_forget()
         self.footer.pack_forget()
-
         self._draw()
+
 
 
     def _draw(self):
