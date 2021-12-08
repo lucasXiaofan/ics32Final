@@ -34,13 +34,10 @@ class Body(tk.Frame):
         self._name = []
         self._body_contact = {}# because the call back doesn't work
         # After all initialization is complete, call the _draw method to pack the widgets
-        # into the Body instance 
+        # into the Body instance
+        self._history_text = []
         self._draw()
     
-    """
-    Update the entry_editor with the full post entry when the corresponding node in the posts_tree
-    is selected.
-    """
     def set_contact_msg(self,contact:dict): # for final project
         self._body_contact = contact
         for name in contact:
@@ -53,15 +50,10 @@ class Body(tk.Frame):
         self.contact_name = self._name[index]
         #print("line 53, pinrt contacts dict",self._body_contact)
         for key, value in self._body_contact.items():
-            #print("key =",key)#>>>>>>>>>>>>>>>>>delete later
             if key == self.contact_name:
-                #print("value = ",value)#>>>>>>>>>>>>>>>>>delete later
                 for item in value:
-                    print("dictionary, success",item['text'])
-                    self.message_widget.insert("end",item['text'])
-        
-        #self.set_text_entry(entry)
-        #print(self.contact_name)#>>>>>>>>>>>>>>>>>delete later
+                    self._history_text.append(item['text'])
+        self.set_history_message(self._history_text)
     
     """
     Returns the text that is currently displayed in the entry_editor widget.
@@ -69,26 +61,22 @@ class Body(tk.Frame):
     def get_text_entry(self) -> str:
         return self.entry_editor.get('1.0', 'end').rstrip()
 
-    """
-    Sets the text to be displayed in the entry_editor widget.
-    NOTE: This method is useful for clearing the widget, just pass an empty string.
-    """
+    def set_history_message(self, text: list):
+        self.message_widget.configure(state='normal')
+        self.message_widget.delete(0.0, "end")
+        self.message_widget.insert(0.0, "\n".join(text))
+        self.message_widget.configure(state='disable')
+
     def set_text_entry(self, text:str):
         self.message_widget.delete(1.0,END)
         self.message_widget.insert("end",text)
         pass
     
-    """
-    Populates the self._posts attribute with posts from the active DSU file.
-    """
     def set_msg(self, contacts:dict):
         self.message_widget.delete(1.0,END)
         for name in contacts: 
             pass
 
-    """
-    Inserts a single post to the post_tree widget.
-    """
     def insert_contact(self, name):
         id = len(self._name) - 1 #adjust id for 0-base of treeview widget
         self._insert_post_tree(id, name)
@@ -151,7 +139,7 @@ class Body(tk.Frame):
         self.entry_box = tk.Text(entry_frame,height=5, bg= bg_color, fg=fg_color)# where to type in message
         self.entry_box.pack(fill=BOTH, side = tk.BOTTOM, expand = False)
 
-        self.message_widget = tk.Text(msg_post_frame,height = 0, bg= bg_color)#,state = 'disabled' #where display the message
+        self.message_widget = tk.Text(msg_post_frame,height = 0, bg= bg_color, state = 'disabled')  # where display the message
         self.message_widget.pack(fill = BOTH,side = tk.TOP,expand = True )
     
         entry_scrollbar = tk.Scrollbar(master=scroll_frame, command=self.message_widget.yview)#scrollbar in text widget
