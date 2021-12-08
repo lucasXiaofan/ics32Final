@@ -25,60 +25,62 @@ A subclass of tk.Frame that is responsible for drawing all of the widgets
 in the body portion of the root frame.
 """
 class Body(tk.Frame):
-    def __init__(self, root, select_callback=None):
+    def __init__(self, root, select_callback=None, night_mode=False):
         tk.Frame.__init__(self, root)
         self.root = root
+        self.night_mode = night_mode
         self._select_callback = select_callback
 
-        # a list of the Post objects available in the active DSU file
-        self._posts = [Profile.Post]
-        
+        self._name = []
+        self._body_contact = {}# because the call back doesn't work
         # After all initialization is complete, call the _draw method to pack the widgets
-        # into the Body instance 
+        # into the Body instance
+        self._history_text = []
         self._draw()
     
-    """
-    Update the entry_editor with the full post entry when the corresponding node in the posts_tree
-    is selected.
-    """
+    def set_contact_msg(self,contact:dict): # for final project
+        self._body_contact = contact
+        for name in contact:
+            self._name.append(name)
+            self.insert_contact(name)
+        print(self._name)
+
     def node_select(self, event):
+        self._history_text = []
         index = int(self.posts_tree.selection()[0])
-        entry = self._posts[index].entry
-        self.set_text_entry(entry)
+        self.contact_name = self._name[index]
+        #print("line 53, pinrt contacts dict",self._body_contact)
+        for key, value in self._body_contact.items():
+            if key == self.contact_name:
+                for item in value:
+                    self._history_text.append(item['text'])
+        self.set_history_message(self._history_text)
     
     """
     Returns the text that is currently displayed in the entry_editor widget.
     """
     def get_text_entry(self) -> str:
-        return self.entry_editor.get('1.0', 'end').rstrip()
+        return self.message_widget.get('1.0', 'end').rstrip()
 
-    """
-    Sets the text to be displayed in the entry_editor widget.
-    NOTE: This method is useful for clearing the widget, just pass an empty string.
-    """
+    def set_history_message(self, text: list):
+        self.message_widget.configure(state='normal')
+        self.message_widget.delete(0.0, 'end')
+        self.message_widget.insert(0.0, "\n".join(text))
+        self.message_widget.configure(state='disable')
+
     def set_text_entry(self, text:str):
         self.message_widget.delete(1.0,END)
         self.message_widget.insert("end",text)
         pass
     
-    """
-    Populates the self._posts attribute with posts from the active DSU file.
-    """
-    def set_posts(self, posts:list):
-        # TODO: Write code to populate self._posts with the post data passed
-        # in the posts parameter and repopulate the UI with the new post entries.
-        # HINT: You will have to write the delete code yourself, but you can take 
-        # advantage of the self.insert_posttree method for updating the posts_tree
-        # widget.
-        pass
+    def set_msg(self, contacts:dict):
+        self.message_widget.delete(1.0,END)
+        for name in contacts: 
+            pass
 
-    """
-    Inserts a single post to the post_tree widget.
-    """
-    def insert_post(self, post: Profile.Post):
-        self._posts.append(post)
-        id = len(self._posts) - 1 #adjust id for 0-base of treeview widget
-        self._insert_post_tree(id, post)
+    def insert_contact(self, name):
+        id = len(self._name) - 1 #adjust id for 0-base of treeview widget
+        self._insert_post_tree(id, name)
 
 
     """
@@ -87,7 +89,7 @@ class Body(tk.Frame):
     """
     def reset_ui(self):
         self.set_text_entry("")
-        self.entry_editor.configure(state=tk.NORMAL)
+        self.message_widget.configure(state=tk.NORMAL)
         self._posts = []
         for item in self.posts_tree.get_children():
             self.posts_tree.delete(item)
@@ -95,13 +97,9 @@ class Body(tk.Frame):
     """
     Inserts a post entry into the posts_tree widget.
     """
-    def _insert_post_tree(self, id, post: Profile.Post):
-        entry = post.entry
-
-        if len(entry) > 25:
-            entry = entry[:24] + "..."
+    def _insert_post_tree(self, id, name):
         
-        self.posts_tree.insert('', id, id, text=entry)
+        self.posts_tree.insert('', 0,id, text=name)
     
     
         #self.message_widget.config(text = "send successfully")
@@ -110,14 +108,24 @@ class Body(tk.Frame):
     Call only once upon initialization to add widgets to the frame
     """
     def _draw(self):
-        
-        posts_frame = tk.Frame(master=self, width=250)
+        print('BODY', self.night_mode)
+        if self.night_mode:
+            bg_color = 'black'
+            fg_color = 'white'
+        else:
+            bg_color = 'white'
+            fg_color = 'black'
+        posts_frame = tk.Frame(master=self, width=250, bg=bg_color)
         posts_frame.pack(fill=tk.BOTH, side=tk.LEFT)
+
+        ttk.Style().configure("Treeview", background = bg_color, 
+        foreground=fg_color, fieldbackground=bg_color)
+
         self.posts_tree = ttk.Treeview(posts_frame)
         self.posts_tree.bind("<<TreeviewSelect>>", self.node_select)
         self.posts_tree.pack(fill=tk.BOTH, side=tk.TOP, expand=True, padx=5, pady=5)
 
-        entry_frame = tk.Frame(master=self, bg="black",height = 120 )
+        entry_frame = tk.Frame(master=self,height = 120, bg=fg_color)
         entry_frame.pack(fill=tk.BOTH, side=tk.BOTTOM,pady =5,padx = 5)
 
         msg_post_frame = tk.Frame(master=self, bg="red" )
@@ -129,10 +137,10 @@ class Body(tk.Frame):
         scroll_frame_entry = tk.Frame(master=entry_frame, bg="blue", width=10)
         scroll_frame_entry.pack( fill = tk.BOTH, side=tk.RIGHT, expand=False)
 
-        self.entry_box = tk.Text(entry_frame,height=5)# where to type in message
+        self.entry_box = tk.Text(entry_frame,height=5, bg= bg_color, fg=fg_color)# where to type in message
         self.entry_box.pack(fill=BOTH, side = tk.BOTTOM, expand = False)
 
-        self.message_widget = tk.Text(msg_post_frame,bg = 'white',height = 0,state = 'disabled') #where display the message
+        self.message_widget = tk.Text(msg_post_frame,height = 0, bg= bg_color, state = 'disabled')  # where display the message
         self.message_widget.pack(fill = BOTH,side = tk.TOP,expand = True )
     
         entry_scrollbar = tk.Scrollbar(master=scroll_frame, command=self.message_widget.yview)#scrollbar in text widget
@@ -151,22 +159,32 @@ A subclass of tk.Frame that is responsible for drawing all of the widgets
 in the footer portion of the root frame.
 """
 class Footer(tk.Frame):
-    def __init__(self, root, save_callback=None):
+    def __init__(self, root, night_mode_callback=None, save_callback=None):
         tk.Frame.__init__(self, root)
         self.root = root
+        self.night_mode_callback = night_mode_callback
         self._save_callback = save_callback
         self.is_online = tk.IntVar()
+        # IntVar is a variable class that provides access to special variables
+        # for Tkinter widgets. is_online is used to hold the state of the chk_button widget.
+        # The value assigned to self.is_night when the chk_button widget is changed by the user
+        # can be retrieved using the get() function:
+        # chk_value = self.is_night.get()
+        self.is_night = tk.IntVar()
+        # After all initialization is complete, call the _draw method to pack the widgets
+        # into the Footer instance 
         self._draw()
     
     """
     Calls the callback function specified in the online_callback class attribute, if
     available, when the chk_button widget has been clicked.
     """
-    def online_click(self):
-        # TODO: Add code that implements a callback to the chk_button click event.
-        # The callback should support a single parameter that contains the value
-        # of the self.is_online widget variable.
-        pass
+    def night_mode_click(self):
+        print("SELF.IS_NIGHT.GET()", self.is_night.get())
+        if self.is_night.get() == 1:  # Night mode enabled
+            self.night_mode_callback(True)
+        else:  # Night mode disabled
+            self.night_mode_callback(False)
 
     """
     Calls the callback function specified in the save_callback class attribute, if
@@ -195,6 +213,10 @@ class Footer(tk.Frame):
         save_button.configure(command=self.send_message)
         save_button.pack(fill=tk.BOTH, side=tk.RIGHT, padx=5, pady=5)
 
+        self.chk_button = tk.Checkbutton(master=self, text="Night Mode", variable=self.is_night)
+        self.chk_button.configure(command=self.night_mode_click) 
+        self.chk_button.pack(fill=tk.BOTH, side=tk.RIGHT)
+
         self.footer_label = tk.Label(master=self, text="Ready.")
         self.footer_label.pack(fill=tk.BOTH, side=tk.RIGHT, padx=5)
 
@@ -209,10 +231,12 @@ the NaClProfile class.
 class MainApp(tk.Frame):
     def __init__(self, root):
         tk.Frame.__init__(self, root)
+        self.user_profile = Profile.Profile() # for final project
         self.root = root
         self.username = ''
         self.password=""
         self.dsu_server=''
+        self.is_night_mode = False
         self._draw()
 
     """
@@ -277,6 +301,10 @@ class MainApp(tk.Frame):
     """
     Saves the text currently in the entry_editor widget to the active DSU file.
     """
+
+            
+            
+
     def save_profile(self):
         self.user_profile.save_profile(self.file_path)
 
@@ -294,6 +322,7 @@ class MainApp(tk.Frame):
         self.username =str(self.Username.get())
         self.password = str(self.Password.get())
         self.user_exist_checker(self.username)
+        self.body.set_contact_msg(self.user_profile.contacts)#<<<<<<<<<<<<<<<<<<<<<<<<<,
         self.account_screen.destroy()
         
 
@@ -356,6 +385,20 @@ class MainApp(tk.Frame):
             command = self.cancel_a_f).pack(side=tk.RIGHT,pady = 5, padx =5)
         pass
     
+    """
+    A callback function for responding to changes to the night mode button.
+    """
+    def night_mode_changed(self, value:bool):
+        if self.is_night_mode == 1:
+            self.is_night_mode = 0
+        else:
+            self.is_night_mode = 1
+
+        self.body.pack_forget()
+        self.footer.pack_forget()
+
+        self._draw()
+
 
     def _draw(self):
         # Build a menu and add it to the root frame.
@@ -374,12 +417,11 @@ class MainApp(tk.Frame):
         menu_setting.add_separator()
         menu_setting.add_command(label='Add Friends', command=self.add_friends)
 
-        self.body = Body(self.root)
-        self.body.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
-
-        self.footer = Footer(self.root, save_callback=self.save_profile)
+        self.footer = Footer(self.root, night_mode_callback=self.night_mode_changed, save_callback=self.save_profile)
         self.footer.pack(fill=tk.BOTH, side=tk.BOTTOM)
 
+        self.body = Body(self.root, night_mode=self.is_night_mode, select_callback=self.user_profile)
+        self.body.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
 if __name__ == "__main__":
     # All Tkinter programs start with a root window. We will name ours 'main'.
     main = tk.Tk()
