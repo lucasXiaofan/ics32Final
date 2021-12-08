@@ -46,7 +46,7 @@ class Body(tk.Frame):
         print(self._name)
 
     def node_select(self, event):
-        self._history_text = []
+        self._history_text = []# clear the previous text
         index = int(self.posts_tree.selection()[0])
         self.contact_name = self._name[index]
         #print("line 53, pinrt contacts dict",self._body_contact)
@@ -56,11 +56,8 @@ class Body(tk.Frame):
                     self._history_text.append(item['text'])
         self.set_history_message(self._history_text)
     
-    """
-    Returns the text that is currently displayed in the entry_editor widget.
-    """
     def get_text_entry(self) -> str:
-        return self.message_widget.get('1.0', 'end').rstrip()
+        return self.entry_box.get('1.0', 'end').rstrip()
 
     def set_history_message(self, text: list):
         self.message_widget.configure(state='normal')
@@ -69,44 +66,24 @@ class Body(tk.Frame):
         self.message_widget.configure(state='disable')
 
     def set_text_entry(self, text:str):
-        self.message_widget.delete(1.0,END)
-        self.message_widget.insert("end",text)
-        pass
-    
-    def set_msg(self, contacts:dict):
-        self.message_widget.delete(1.0,END)
-        for name in contacts: 
-            pass
+        self.entry_box.delete(1.0,END)
+        self.entry_box.insert("end",text)
+
 
     def insert_contact(self, name):
         id = len(self._name) - 1 #adjust id for 0-base of treeview widget
         self._insert_post_tree(id, name)
 
-
-    """
-    Resets all UI widgets to their default state. Useful for when clearing the UI is neccessary such
-    as when a new DSU file is loaded, for example.
-    """
     def reset_ui(self):
         self.set_text_entry("")
         self.message_widget.configure(state=tk.NORMAL)
-        self._posts = []
+        self._name = []
         for item in self.posts_tree.get_children():
             self.posts_tree.delete(item)
 
-    """
-    Inserts a post entry into the posts_tree widget.
-    """
     def _insert_post_tree(self, id, name):
-        
         self.posts_tree.insert('', 0,id, text=name)
     
-    
-        #self.message_widget.config(text = "send successfully")
-    
-    """
-    Call only once upon initialization to add widgets to the frame
-    """
     def _draw(self):
         print('BODY', self.night_mode)
         if self.night_mode:
@@ -159,11 +136,11 @@ A subclass of tk.Frame that is responsible for drawing all of the widgets
 in the footer portion of the root frame.
 """
 class Footer(tk.Frame):
-    def __init__(self, root, night_mode_callback=None, save_callback=None):
+    def __init__(self, root, night_mode_callback=None, send_callback=None):
         tk.Frame.__init__(self, root)
         self.root = root
         self.night_mode_callback = night_mode_callback
-        self._save_callback = save_callback
+        self._send_callback = send_callback
         self.is_online = tk.IntVar()
         # IntVar is a variable class that provides access to special variables
         # for Tkinter widgets. is_online is used to hold the state of the chk_button widget.
@@ -190,10 +167,6 @@ class Footer(tk.Frame):
     Calls the callback function specified in the save_callback class attribute, if
     available, when the save_button has been clicked.
     """
-    def save_click(self):
-        if self._save_callback is not None:
-            self._save_callback()
-
     """
     Updates the text that is displayed in the footer_label widget
     """
@@ -205,6 +178,8 @@ class Footer(tk.Frame):
     """
 
     def send_message(self):
+        if self._send_callback is not None:
+            self._send_callback()
         pass
 
         
@@ -237,6 +212,7 @@ class MainApp(tk.Frame):
         self.password=""
         self.dsu_server=''
         self.is_night_mode = False
+        self.recipient = None
         self._draw()
 
     """
@@ -307,6 +283,12 @@ class MainApp(tk.Frame):
 
     def save_profile(self):
         self.user_profile.save_profile(self.file_path)
+
+    def send_message_to_server(self): # callback to footer, so when user click send, the msg in entry will send to 
+        #message widget
+        print(self.body.get_text_entry())
+        print(self.body.contact_name,' ')
+        self.body.set_text_entry('')
 
 
     """
@@ -417,7 +399,7 @@ class MainApp(tk.Frame):
         menu_setting.add_separator()
         menu_setting.add_command(label='Add Friends', command=self.add_friends)
 
-        self.footer = Footer(self.root, night_mode_callback=self.night_mode_changed, save_callback=self.save_profile)
+        self.footer = Footer(self.root, night_mode_callback=self.night_mode_changed, send_callback=self.send_message_to_server)
         self.footer.pack(fill=tk.BOTH, side=tk.BOTTOM)
 
         self.body = Body(self.root, night_mode=self.is_night_mode, select_callback=self.user_profile)
