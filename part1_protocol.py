@@ -10,7 +10,6 @@
 
 import json
 from collections import namedtuple
-import part2_client
 
 response_list = []
 
