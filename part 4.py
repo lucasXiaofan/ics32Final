@@ -111,13 +111,13 @@ class Body(tk.Frame):
     """
     def _draw(self):
         
-        posts_frame = tk.Frame(master=self, width=250)
+        posts_frame = tk.Frame(master=self, width=250, bg='black')
         posts_frame.pack(fill=tk.BOTH, side=tk.LEFT)
         self.posts_tree = ttk.Treeview(posts_frame)
         self.posts_tree.bind("<<TreeviewSelect>>", self.node_select)
         self.posts_tree.pack(fill=tk.BOTH, side=tk.TOP, expand=True, padx=5, pady=5)
 
-        entry_frame = tk.Frame(master=self, bg="black",height = 120 )
+        entry_frame = tk.Frame(master=self,height = 120, bg="black")
         entry_frame.pack(fill=tk.BOTH, side=tk.BOTTOM,pady =5,padx = 5)
 
         msg_post_frame = tk.Frame(master=self, bg="red" )
@@ -129,10 +129,10 @@ class Body(tk.Frame):
         scroll_frame_entry = tk.Frame(master=entry_frame, bg="blue", width=10)
         scroll_frame_entry.pack( fill = tk.BOTH, side=tk.RIGHT, expand=False)
 
-        self.entry_box = tk.Text(entry_frame,height=5)# where to type in message
+        self.entry_box = tk.Text(entry_frame,height=5, bg= 'black', fg='white')# where to type in message
         self.entry_box.pack(fill=BOTH, side = tk.BOTTOM, expand = False)
 
-        self.message_widget = tk.Text(msg_post_frame,bg = 'white',height = 0,state = 'disabled') #where display the message
+        self.message_widget = tk.Text(msg_post_frame,height = 0,state = 'disabled', bg= 'black') #where display the message
         self.message_widget.pack(fill = BOTH,side = tk.TOP,expand = True )
     
         entry_scrollbar = tk.Scrollbar(master=scroll_frame, command=self.message_widget.yview)#scrollbar in text widget
