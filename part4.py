@@ -14,6 +14,7 @@ import tkinter as tk
 from tkinter import Button, Entry, Label, StringVar, Text, Toplevel, ttk, filedialog
 from tkinter.constants import BOTH, END, RADIOBUTTON, RIGHT, TRUE
 import Profile
+import sys
 #from NaClProfile import NaClProfile
 
 # lucas
@@ -315,6 +316,7 @@ class MainApp(tk.Frame):
     """
     def close(self):
         self.root.destroy()
+        sys.exit()
 
 
 #-------------------------------------configure account screen---------------------------------->>
