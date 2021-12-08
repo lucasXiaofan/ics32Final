@@ -10,10 +10,14 @@
 
 
 
+from os import curdir
 import tkinter as tk
 from tkinter import Button, Entry, Label, StringVar, Text, Toplevel, ttk, filedialog
 from tkinter.constants import BOTH, END, RADIOBUTTON, RIGHT, TRUE
 import Profile
+import custom_class
+import ds_messenger
+
 #from NaClProfile import NaClProfile
 
 # lucas
@@ -256,6 +260,8 @@ class MainApp(tk.Frame):
             self.create_new_profile()
         except FileExistsError:
             self.load_profile()
+        except custom_class.UnExpected_Error:
+            print("unexpected error, try again")
 
     def create_path(self,file_path):
         """Creates a file in the profiles folder for storing Profile data."""
@@ -327,7 +333,7 @@ class MainApp(tk.Frame):
         
 
     def cancel(self):
-        self.account_screen.destroy()
+        self.account_screen.destroy(self.root)
 #-------------------------------------configure account screen---------------------------------->>
 
 #-------------------------------------add friend screen----------------------------------------->>
@@ -343,7 +349,7 @@ class MainApp(tk.Frame):
         self.account_screen = Toplevel(self.root)
         self.account_screen.title('Configure Account')
         self.account_screen.geometry("250x180") # width x height
-
+        
         self.DS_Server_Address = StringVar()
         self.Username = StringVar()
         self.Password = StringVar()
@@ -357,12 +363,10 @@ class MainApp(tk.Frame):
         Label(self.account_screen,text='Password').pack()
         Entry(self.account_screen,textvariable=self.Password ).pack()
 
-        Button(self.account_screen,text = "Ok", width= 15, 
-            height=1,
-            command= self.ok_login).pack(side=tk.LEFT,pady = 5, padx =5)
-        Button(self.account_screen,text = "cancel", width= 15, 
-            height=1,
-            command = self.cancel).pack(side=tk.RIGHT,pady = 5, padx =5)
+        Button(self.account_screen,text = "Ok", width= 15, height=1, command= self.ok_login).pack(side=tk.LEFT,pady = 5, padx =5)
+        Button(self.account_screen,text = "cancel", width= 15, height=1, command = self.cancel).pack(side=tk.RIGHT,pady = 5, padx =5)
+
+
 
 
     # add user by username 
