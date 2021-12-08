@@ -1,7 +1,6 @@
 import ds_messenger
 import unittest
 import socket
-import getting_token
 import json
 
 port = 3021
