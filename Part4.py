@@ -43,6 +43,7 @@ class Body(tk.Frame):
         print(self._name)
 
     def node_select(self, event):
+        self._history_text = []
         index = int(self.posts_tree.selection()[0])
         self.contact_name = self._name[index]
         #print("line 53, pinrt contacts dict",self._body_contact)
@@ -56,11 +57,11 @@ class Body(tk.Frame):
     Returns the text that is currently displayed in the entry_editor widget.
     """
     def get_text_entry(self) -> str:
-        return self.entry_editor.get('1.0', 'end').rstrip()
+        return self.message_widget.get('1.0', 'end').rstrip()
 
     def set_history_message(self, text: list):
         self.message_widget.configure(state='normal')
-        self.message_widget.delete(0.0, "end")
+        self.message_widget.delete(0.0, 'end')
         self.message_widget.insert(0.0, "\n".join(text))
         self.message_widget.configure(state='disable')
 
