@@ -25,9 +25,10 @@ A subclass of tk.Frame that is responsible for drawing all of the widgets
 in the body portion of the root frame.
 """
 class Body(tk.Frame):
-    def __init__(self, root, select_callback=None):
+    def __init__(self, root, select_callback=None, night_mode=False):
         tk.Frame.__init__(self, root)
         self.root = root
+        self.night_mode = night_mode
         self._select_callback = select_callback
 
         # a list of the Post objects available in the active DSU file
@@ -110,14 +111,24 @@ class Body(tk.Frame):
     Call only once upon initialization to add widgets to the frame
     """
     def _draw(self):
-        
-        posts_frame = tk.Frame(master=self, width=250, bg='black')
+        print('BODY', self.night_mode)
+        if self.night_mode:
+            bg_color = 'black'
+            fg_color = 'white'
+        else:
+            bg_color = 'white'
+            fg_color = 'black'
+        posts_frame = tk.Frame(master=self, width=250, bg=bg_color)
         posts_frame.pack(fill=tk.BOTH, side=tk.LEFT)
+
+        ttk.Style().configure("Treeview", background = bg_color, 
+        foreground=fg_color, fieldbackground=bg_color)
+
         self.posts_tree = ttk.Treeview(posts_frame)
         self.posts_tree.bind("<<TreeviewSelect>>", self.node_select)
         self.posts_tree.pack(fill=tk.BOTH, side=tk.TOP, expand=True, padx=5, pady=5)
 
-        entry_frame = tk.Frame(master=self,height = 120, bg="black")
+        entry_frame = tk.Frame(master=self,height = 120, bg=fg_color)
         entry_frame.pack(fill=tk.BOTH, side=tk.BOTTOM,pady =5,padx = 5)
 
         msg_post_frame = tk.Frame(master=self, bg="red" )
@@ -129,10 +140,10 @@ class Body(tk.Frame):
         scroll_frame_entry = tk.Frame(master=entry_frame, bg="blue", width=10)
         scroll_frame_entry.pack( fill = tk.BOTH, side=tk.RIGHT, expand=False)
 
-        self.entry_box = tk.Text(entry_frame,height=5, bg= 'black', fg='white')# where to type in message
+        self.entry_box = tk.Text(entry_frame,height=5, bg= bg_color, fg=fg_color)# where to type in message
         self.entry_box.pack(fill=BOTH, side = tk.BOTTOM, expand = False)
 
-        self.message_widget = tk.Text(msg_post_frame,height = 0,state = 'disabled', bg= 'black') #where display the message
+        self.message_widget = tk.Text(msg_post_frame,height = 0,state = 'disabled', bg= bg_color) #where display the message
         self.message_widget.pack(fill = BOTH,side = tk.TOP,expand = True )
     
         entry_scrollbar = tk.Scrollbar(master=scroll_frame, command=self.message_widget.yview)#scrollbar in text widget
@@ -172,6 +183,7 @@ class Footer(tk.Frame):
     available, when the chk_button widget has been clicked.
     """
     def night_mode_click(self):
+        print("SELF.IS_NIGHT.GET()", self.is_night.get())
         if self.is_night.get() == 1:  # Night mode enabled
             self.night_mode_callback(True)
         else:  # Night mode disabled
@@ -374,11 +386,16 @@ class MainApp(tk.Frame):
     A callback function for responding to changes to the night mode button.
     """
     def night_mode_changed(self, value:bool):
-        self.is_night_mode = True
-        if value:
-            print('NIGHT MODE')
+        if self.is_night_mode == 1:
+            self.is_night_mode = 0
         else:
-            print('NIGHT')
+            self.is_night_mode = 1
+        #self.is_night_mode = value
+
+        self.body.destroy()
+        self.footer.destroy()
+        self._draw()
+
 
     def _draw(self):
         # Build a menu and add it to the root frame.
@@ -397,12 +414,10 @@ class MainApp(tk.Frame):
         menu_setting.add_separator()
         menu_setting.add_command(label='Add Friends', command=self.add_friends)
 
-        self.body = Body(self.root)
-        self.body.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
-
         self.footer = Footer(self.root, night_mode_callback=self.night_mode_changed, save_callback=self.save_profile)
         self.footer.pack(fill=tk.BOTH, side=tk.BOTTOM)
-
+        self.body = Body(self.root, night_mode=self.is_night_mode)
+        self.body.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
 if __name__ == "__main__":
     # All Tkinter programs start with a root window. We will name ours 'main'.
     main = tk.Tk()
