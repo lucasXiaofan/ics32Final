@@ -74,13 +74,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client: # opening sock
       send.flush() #cant leave anything behind 
 
       respo = recv.readline()
+      print(respo)
 
       #new_token = part1_protocol.extract_json(respo)[0] # grabs token from join response
-      dm = DirectMessenger
-      DirectMessenger(dsuserver=server, username="usjdjsdjj", password="hellowrodl1223")
-      dm.send(DirectMessage, "Hello World", "unittestwork")
 
-      DirectMessenger.retrieve_all(DirectMessenger)
-      DirectMessenger.retrieve_new(DirectMessenger)
+      print(DirectMessenger.retrieve_all(DirectMessenger))
+      print(DirectMessenger.retrieve_new(DirectMessenger))
 
       break
