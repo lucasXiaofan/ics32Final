@@ -12,6 +12,7 @@ import Profile
 import part1_protocol
 
 port = 3021
+server = "168.235.86.101" #dsu server is hardcoded rn but it shouldnt be 
 
 class DirectMessage:
   def __init__(self):
@@ -111,14 +112,11 @@ class DirectMessenger:
 
 #--------------------------- commands to call these functions -----------------------------------#
 
-#dm = DirectMessenger(dsuserver=server, username="unittest123", password="passwrod1234")
-#dm.token = DirectMessenger.join(DirectMessenger, server, dm.username, dm.password) 
+dm = DirectMessenger(dsuserver=server, username="unittest123", password="passwrod1234")
+dm.token = DirectMessenger.join(DirectMessenger, server, dm.username, dm.password) 
 #DirectMessenger.send(DirectMessenger, "Whats up man", dm.username)
 #DirectMessenger.retrieve_all(DirectMessenger)
 # DirectMessenger.retrieve_new(DirectMessenger)
-
-
-server = "168.235.86.101" #dsu server is hardcoded rn but it shouldnt be 
 
 # To do:
 # First populate DirectMessenger class with username, dsuserver, and password
