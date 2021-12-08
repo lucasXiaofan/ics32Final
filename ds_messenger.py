@@ -7,23 +7,66 @@
 # 94639158
 
 import socket
-import ds_protocol
 import json
 import Profile
+import part1_protocol
+import ds_messenger
+
+port = 3021
+server = "168.235.86.101"
+all_msg1 = []
+new_msg1 = []
+
+class DirectMessage:
+  def __init__(self):
+    self.recipient = None
+    self.message = None
+    self.timestamp = None
+
+class DirectMessenger:
+  def __init__(self, dsuserver=None, username=None, password=None):
+    self.token = None
+		
+  def send(self, message:str, recipient:str) -> bool:
+    # returns true if message successfully sent, false if send failed.
+    self.recipient = recipient
+    self.message = message
+    self.timestamp = Profile.time.time()
+    try:
+      direct_msg = '{"token": "31292afb-8505-4421-b112-e18bc0938642", "directmessage": {"entry":"' + self.message + '", "recipient": "' + self.recipient + '", "timestamp": "' + str(self.timestamp) + '"}}' # posts user's desired message
+      response = True
+    except:
+      response = False
+    finally:
+      send.write(direct_msg + '\r\n')
+      send.flush() #cant leave anything behind 
+      respo = recv.readline()
+
+    return response
+    
+		
+  def retrieve_new(self) -> list:
+    # returns a list of DirectMessage objects containing all new messages
+    new_msg = '{"token": "31292afb-8505-4421-b112-e18bc0938642", "directmessage": "new" }'
+    send.write(new_msg + '\r\n')
+    send.flush() #cant leave anything behind 
+    respo = recv.readline()
+    new_msg1.append(respo)
+    
+    return new_msg1
+
+  def retrieve_all(self) -> list:
+    # returns a list of DirectMessage objects containing all messages
+    all_msg = '{"token": "31292afb-8505-4421-b112-e18bc0938642", "directmessage": "all" }'
+    send.write(all_msg + '\r\n')
+    send.flush() #cant leave anything behind 
+    respo = recv.readline()
+    all_msg1.append(respo)
+    
+    return all_msg1
 
 
-def send(server:str, port:int, username:str, password:str, message:str, bio:str=None):
-  '''
-  The send function joins a ds server and sends a message, bio, or both
-
-  :param server: The ip address for the ICS 32 DS server.
-  :param port: The port where the ICS 32 DS server is accepting connections.
-  :param username: The user name to be assigned to the message.
-  :param password: The password associated with the username.
-  :param message: The message to be sent to the server.
-  :param bio: Optional, a bio for the user.
-  '''
-  with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client: # opening socket stream
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client: # opening socket stream
     client.connect((server, port)) # connects to server and port passed to send function
     
     send = client.makefile('w') # to send
@@ -31,43 +74,19 @@ def send(server:str, port:int, username:str, password:str, message:str, bio:str=
 
     print('client connected to', server,'on', port) # confirmation to user
 
-    # for json to use variables instead of actual hard-coded values, do this format: "' + str(variable) + '"
-
     while True:
-      json_msg = '{"join": {"username": "' + username + '" ,"password": "' + password + '", "token": ""}}' # join message must always join before posting
-      
+      json_msg = '{"join": {"username": "unittestwork" ,"password": "hellowrodl1223", "token": ""}}' 
+        
       send.write(json_msg + '\r\n')
       send.flush() #cant leave anything behind 
 
       respo = recv.readline()
+      print(respo)
 
-      new_token = ds_protocol.extract_json(respo).token # grabs token from join response
+    #new_token = part1_protocol.extract_json(respo)[0] # grabs token from join response
 
-      if bio != None: # posts bio to post if user has bio
-        bio_1 = bio_function(bio, new_token)
+      DirectMessenger.send(DirectMessenger, "hello WWKKWKEK", "unittestwork")
+      print(DirectMessenger.retrieve_all(DirectMessenger))
+      print(DirectMessenger.retrieve_new(DirectMessenger))
 
-        send.write(bio_1 + '\r\n')
-        send.flush() 
-
-        response = recv.readline() 
-        
-      else:
-        pass
-
-      msg = '{"token": "' + str(new_token) + '", "post": {"entry":"' + str(message) + '", "timestamp": "' + str(Profile.time.time()) + '"}}' # posts user's desired message
-
-      send.write(msg + '\r\n')
-      send.flush()
-      srv_msg = recv.readline()
-      ds_protocol.extract_json(srv_msg).message # prints confirmation message 
-      
       break
-
-  
-  pass
-
-
-def bio_function(bio, new_token):
-  bio_post = '{"token":"' + str(new_token) + '", "bio": {"entry": "' + str(bio) + '","timestamp": "' + str(Profile.time.time()) + '"}}' #to post a bio with a post
-
-  return bio_post
