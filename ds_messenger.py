@@ -10,7 +10,6 @@ import socket
 import json
 import Profile
 import part1_protocol
-import ds_messenger
 
 port = 3021
 server = "168.235.86.101"
