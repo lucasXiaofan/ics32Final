@@ -335,9 +335,11 @@ class MainApp(tk.Frame):
 
 #-------------------------------------add friend screen----------------------------------------->>
     def ok_add_f(self): #TODO for final project
-        pass
+        print(self.contact_name.get())
+        self.add_f_screen.destroy()
 
-    def cancel_a_f(self):
+
+    def cancel_add_f(self):
         self.add_f_screen.destroy()
 #-------------------------------------add friend screen----------------------------------------->>
 
@@ -374,10 +376,10 @@ class MainApp(tk.Frame):
         self.add_f_screen.title("Add a friend")
         self.add_f_screen.geometry("250x100")
 
-        self.cont_name = StringVar()
+        self.contact_name = StringVar()
 
         Label(self.add_f_screen,text='Please type the username of your new contact').pack()
-        Entry(self.add_f_screen,textvariable=self.cont_name ).pack()
+        Entry(self.add_f_screen,textvariable=self.contact_name ).pack()
 
         Button(self.add_f_screen,text = "Ok", width= 15, 
             height=1,
@@ -385,7 +387,7 @@ class MainApp(tk.Frame):
 
         Button(self.add_f_screen,text = "cancel", width= 15, 
             height=1,
-            command = self.cancel_a_f).pack(side=tk.RIGHT,pady = 5, padx =5)
+            command = self.cancel_add_f).pack(side=tk.RIGHT,pady = 5, padx =5)
         pass
     
     """
