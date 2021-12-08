@@ -28,11 +28,9 @@ class Body(tk.Frame):
     def __init__(self, root, select_callback=None):
         tk.Frame.__init__(self, root)
         self.root = root
-        self._select_callback = select_callback
-        contacts = self._select_callback.contacts
 
         self._name = []
-        
+        self._body_contact = {}# because the call back doesn't work
         # After all initialization is complete, call the _draw method to pack the widgets
         # into the Body instance 
         self._draw()
@@ -42,6 +40,7 @@ class Body(tk.Frame):
     is selected.
     """
     def set_contact_msg(self,contact:dict): # for final project
+        self._body_contact = contact
         for name in contact:
             self._name.append(name)
             self.insert_contact(name)
@@ -50,9 +49,17 @@ class Body(tk.Frame):
     def node_select(self, event):
         index = int(self.posts_tree.selection()[0])
         self.contact_name = self._name[index]
+        #print("line 53, pinrt contacts dict",self._body_contact)
+        for key, value in self._body_contact.items():
+            #print("key =",key)#>>>>>>>>>>>>>>>>>delete later
+            if key == self.contact_name:
+                #print("value = ",value)#>>>>>>>>>>>>>>>>>delete later
+                for item in value:
+                    print("dictionary, success",item['text'])
+                    self.message_widget.insert("end",item['text'])
         
         #self.set_text_entry(entry)
-        print(self.contact_name)
+        #print(self.contact_name)#>>>>>>>>>>>>>>>>>delete later
     
     """
     Returns the text that is currently displayed in the entry_editor widget.
@@ -132,7 +139,7 @@ class Body(tk.Frame):
         self.entry_box = tk.Text(entry_frame,height=5)# where to type in message
         self.entry_box.pack(fill=BOTH, side = tk.BOTTOM, expand = False)
 
-        self.message_widget = tk.Text(msg_post_frame,bg = 'white',height = 0,state = 'disabled') #where display the message
+        self.message_widget = tk.Text(msg_post_frame,bg = 'white',height = 0)#,state = 'disabled') #where display the message
         self.message_widget.pack(fill = BOTH,side = tk.TOP,expand = True )
     
         entry_scrollbar = tk.Scrollbar(master=scroll_frame, command=self.message_widget.yview)#scrollbar in text widget
@@ -209,7 +216,7 @@ the NaClProfile class.
 class MainApp(tk.Frame):
     def __init__(self, root):
         tk.Frame.__init__(self, root)
-        self.current_profile = Profile.Profile() # for final project
+        self.user_profile = Profile.Profile() # for final project
         self.root = root
         self.username = ''
         self.password=""
@@ -379,8 +386,8 @@ class MainApp(tk.Frame):
         menu_setting.add_command(label='Configure Account', command=self.configure_account)
         menu_setting.add_separator()
         menu_setting.add_command(label='Add Friends', command=self.add_friends)
-
-        self.body = Body(self.root, select_callback=self.current_profile)
+        print("line 386",self.user_profile.contacts)
+        self.body = Body(self.root, select_callback=self.user_profile)
         self.body.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
 
         self.footer = Footer(self.root, save_callback=self.save_profile)
