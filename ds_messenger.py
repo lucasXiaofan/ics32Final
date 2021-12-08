@@ -33,7 +33,7 @@ class DirectMessenger:
     self.message = message
     self.timestamp = Profile.time.time()
     try:
-      direct_msg = '{"token": "31292afb-8505-4421-b112-e18bc0938642", "directmessage": {"entry":"' + self.message + '", "recipient": "' + self.recipient + '", "timestamp": "' + str(self.timestamp) + '"}}' # posts user's desired message
+      direct_msg = '{"token": "' + self.token + '"directmessage": {"entry":"' + self.message + '", "recipient": "' + self.recipient + '", "timestamp": "' + str(self.timestamp) + '"}}' # posts user's desired message
       response = True
     except:
       response = False
@@ -82,9 +82,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client: # opening sock
 
       respo = recv.readline()
       print(respo)
-
-    #new_token = part1_protocol.extract_json(respo)[0] # grabs token from join response
-
+      new_token = part1_protocol.extract_json(respo) # grabs token from join respon
+      dm = DirectMessenger()
+      dm.token = new_token
       DirectMessenger.send(DirectMessenger, "hello WWKKWKEK", "unittestwork")
       print(DirectMessenger.retrieve_all(DirectMessenger))
       print(DirectMessenger.retrieve_new(DirectMessenger))

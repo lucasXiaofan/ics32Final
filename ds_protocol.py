@@ -39,7 +39,7 @@ def extract_json(json_msg:str) -> DataTuple: # helps get important information f
   return DataTuple(token, message) # easy to use in client module, if i need just message or just token 
 
   
-# Send a directmessage to another DS user
+# Send a directmessage to another DS user#
 {"token":"user_token", "directmessage": {"entry": "Hello World!","recipient":"ohhimark", "timestamp": "1603167689.3928561"}}
 
 # Request unread message from the DS server
