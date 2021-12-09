@@ -309,7 +309,7 @@ class MainApp(tk.Frame):
 
         self.messgener.send(self.body.get_text_entry(),self.recipient)
         #for test purpose
-        print("line 294 see if message come in",self.messgener.retrieve_all())
+        print("line 294 see if message come in",self.messgener.retrieve_new())
         self.body.set_text_entry('')
 
 
@@ -323,13 +323,31 @@ class MainApp(tk.Frame):
 
 
 #-------------------------------------configure account screen---------------------------------->>
+
+
+    def add_to_contacts(self, messages:list) -> dict:
+        contacts = self.user_profile.contacts
+        for msg in messages:
+            reciepient = msg['from']
+            if reciepient not in contacts:
+                contacts[reciepient] = [msg]
+            else:
+                contacts[reciepient].append(msg)
+        return contacts
+
     def ok_login(self): #TODO for final project
         self.dsu_server = str(self.DS_Server_Address.get())
         self.username =str(self.Username.get())
         self.password = str(self.Password.get())
         self.messgener = DirectMessenger(dsuserver="168.235.86.101",username=self.username,password=self.password)
         self.messgener.token = self.messgener.join()
+
         self.user_exist_checker(self.username)
+
+        list_of_messages = self.messgener.retrieve_all()
+        self.user_profile.contacts = self.add_to_contacts(list_of_messages)
+        self.save_profile()
+
         self.body.set_contact_msg(self.user_profile.contacts)#<<<<<<<<<<<<<<<<<<<<<<<<<,
         self.account_screen.destroy()
         
