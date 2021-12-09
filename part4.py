@@ -235,7 +235,16 @@ class MainApp(tk.Frame):
     
     def update(self):
         retreived_messages = self.messgener.retrieve_new()
-        print(retreived_messages)
+        messages = retreived_messages[1]
+        if messages:
+            message = messages[0]
+            recipient = message['from']
+            if recipient in self.user_profile.contacts:
+                self.user_profile.contacts[recipient].append(message)
+            else:
+                self.user_profile.contacts[recipient] = [message]
+            self.save_profile()
+
 
     """
     Creates a new DSU file when the 'New' menu item is clicked.
