@@ -58,7 +58,7 @@ class Body(tk.Frame):
         for key, value in self._body_contact.items():
             if key == self.contact_name:
                 for item in value:
-                    self._history_text.append(item['text'])
+                    self._history_text.append(item['message'])
         self.set_history_message(self._history_text)
     
     def get_text_entry(self) -> str:
@@ -213,11 +213,6 @@ class Refresh(Thread):
         
 
 
-"""
-A subclass of tk.Frame that is responsible for drawing all of the widgets
-in the main portion of the root frame. Also manages all method calls for
-the NaClProfile class.
-"""
 class MainApp(tk.Frame):
     def __init__(self, root):
         tk.Frame.__init__(self, root)
@@ -247,12 +242,6 @@ class MainApp(tk.Frame):
     Creates a new DSU file when the 'New' menu item is clicked.
     """
 #----------------------------------------------new profile--------------------------#
-    """
-    After user click the 'ok' in configure account 
-    1.go to the user_exist_checker to check whether the usrname is taken
-    2.if taken go to open_profile
-    3.if not taken, go to new_profile 
-    """
     def user_exist_checker(self,usr):
         self.file_path = f'profiles/{usr}.dsu' #usr = the self.username
         try:
@@ -304,12 +293,15 @@ class MainApp(tk.Frame):
             self.recipient = 'xiaof' # for testing purpose, default contact name
         else:
             self.recipient = self.body.contact_name
+        
         print("current contact name: ",self.body.contact_name)
         print("who is the recipient: ",self.recipient)
 
         self.messgener.send(self.body.get_text_entry(),self.recipient)
         #for test purpose
-        print("line 294 see if message come in",self.messgener.retrieve_new())
+        self.messgener.retrieve_new()
+        print("line 294 see if message come in",)
+        print(self.user_profile.contacts[''])
         self.body.set_text_entry('')
 
 
@@ -339,7 +331,7 @@ class MainApp(tk.Frame):
         self.dsu_server = str(self.DS_Server_Address.get())
         self.username =str(self.Username.get())
         self.password = str(self.Password.get())
-        self.messgener = DirectMessenger(dsuserver="168.235.86.101",username=self.username,password=self.password)
+        self.messgener = DirectMessenger(dsuserver=self.dsu_server,username=self.username,password=self.password)
         self.messgener.token = self.messgener.join()
 
         self.user_exist_checker(self.username)
@@ -450,6 +442,7 @@ class MainApp(tk.Frame):
 
         self.body = Body(self.root, night_mode=self.is_night_mode, select_callback=self.user_profile)
         self.body.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
+
 if __name__ == "__main__":
     # All Tkinter programs start with a root window. We will name ours 'main'.
     main = tk.Tk()

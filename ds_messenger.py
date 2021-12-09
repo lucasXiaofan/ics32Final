@@ -21,7 +21,7 @@ class DirectMessage:
     self.timestamp = None
 
 class DirectMessenger:
-  def __init__(self, dsuserver=None, username=None, password=None):
+  def __init__(self, dsuserver="168.235.86.101", username=None, password=None):
     self.dsuserver = dsuserver
     self.username = username
     self.password = password
