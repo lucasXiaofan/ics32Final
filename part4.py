@@ -58,7 +58,7 @@ class Body(tk.Frame):
         for key, value in self._body_contact.items():
             if key == self.contact_name:
                 for item in value:
-                    self._history_text.append(item['text'])
+                    self._history_text.append(f"{item['from']}: {item['message']}")
         self.set_history_message(self._history_text)
     
     def get_text_entry(self) -> str:
