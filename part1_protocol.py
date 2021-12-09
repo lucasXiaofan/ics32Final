@@ -11,7 +11,7 @@
 import json
 from collections import namedtuple
 
-
+"""Function responsible for extracting json string into objects."""
 def extract_json(json_msg:str): # helps get important information from response
   '''
   Call the json.loads function on a json string and convert it to a list 

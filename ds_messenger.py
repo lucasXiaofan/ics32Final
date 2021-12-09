@@ -14,12 +14,14 @@ import part1_protocol
 port = 3021
 server = "168.235.86.101" #dsu server is hardcoded rn but it shouldnt be 
 
+"""Handles the Direct message class for message objects."""
 class DirectMessage:
   def __init__(self):
     self.recipient = None
     self.message = None
     self.timestamp = None
 
+"""Handles the DirectMessenger class for sending and recieve messages across the server."""
 class DirectMessenger:
   def __init__(self, dsuserver="168.235.86.101", username=None, password=None):
     self.dsuserver = dsuserver
@@ -46,7 +48,7 @@ class DirectMessenger:
       
       return part1_protocol.extract_json(respo)[0]
   
-
+  """"Sending the message to the recipient over the server."""
   def send(self, message:str, recipient:str) -> bool:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client: # opening socket stream
       client.connect((server, port)) # connects to server and port passed to send function
@@ -72,7 +74,7 @@ class DirectMessenger:
 
       return response
     
-		
+  """Retrieving new messages from the server."""
   def retrieve_new(self) -> list:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client: # opening socket stream
       client.connect((server, port)) # connects to server and port passed to send function
@@ -90,6 +92,7 @@ class DirectMessenger:
 
       return stringthing
 
+  """Retrieving ALL messages from the server."""
   def retrieve_all(self) -> list:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client: # opening socket stream
       client.connect((server, port)) # connects to server and port passed to send function

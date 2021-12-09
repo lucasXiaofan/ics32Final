@@ -26,7 +26,7 @@ import custom_class
 # ics 32 final project
 
 
-
+"""Class responsible for the Body of the GUI"""
 class Body(tk.Frame):
     def __init__(self, root, select_callback=None, night_mode=False):
         tk.Frame.__init__(self, root)
@@ -40,43 +40,47 @@ class Body(tk.Frame):
         # into the Body instance
         self._history_text = []
         self._draw()
-    
+
+    """Sets the name for the contact"""
     def set_contact_msg(self,contact:dict): # for final project
         self._body_contact = contact
         for name in contact:
             self._name.append(name)
             self.insert_contact(name)
-        print(self._name)
 
+    """Selects the node in the GUI Tree."""
     def node_select(self, event):
         self._history_text = []# clear the previous text
         index = int(self.posts_tree.selection()[0])
         self.contact_name = self._name[index]
-        #print("line 53, pinrt contacts dict",self._body_contact)
         for key, value in self._body_contact.items():
             if key == self.contact_name:
                 for item in value:
                     self._history_text.append(f"{item['from']}: {item['message']}")
         self.set_history_message(self._history_text)
-    
+
+    """Retrieves the text entry from the entry box."""
     def get_text_entry(self) -> str:
         return self.entry_box.get('1.0', 'end').rstrip()
 
+    """Sets all the messages sent by the contact."""
     def set_history_message(self, text: list):
         self.message_widget.configure(state='normal')
         self.message_widget.delete(0.0, 'end')
         self.message_widget.insert(0.0, "\n".join(text))
         self.message_widget.configure(state='disable')
 
+    """Sets the text entry."""
     def set_text_entry(self, text:str):
         self.entry_box.delete(1.0,END)
         self.entry_box.insert("end",text)
 
-
+    """Inserts contact into the post tree."""
     def insert_contact(self, name):
         id = len(self._name) - 1 #adjust id for 0-base of treeview widget
         self._insert_post_tree(id, name)
 
+    """Resets the GUI."""
     def reset_ui(self):
         self.set_text_entry("")
         self.message_widget.configure(state=tk.NORMAL)
@@ -84,11 +88,12 @@ class Body(tk.Frame):
         for item in self.posts_tree.get_children():
             self.posts_tree.delete(item)
 
+    """Inserts contact name into the post tree"""
     def _insert_post_tree(self, id, name):
         self.posts_tree.insert('', 0,id, text=name)
     
+    
     def _draw(self):
-        print('BODY', self.night_mode)
         if self.night_mode:
             bg_color = 'black'
             fg_color = 'white'
@@ -156,30 +161,24 @@ class Footer(tk.Frame):
         self._draw()
     
     """
-    Calls the callback function specified in the online_callback class attribute, if
+    Calls the callback function specified in the night_mode_callback class attribute, if
     available, when the chk_button widget has been clicked.
     """
     def night_mode_click(self):
-        print("SELF.IS_NIGHT.GET()", self.is_night.get())
         if self.is_night.get() == 1:  # Night mode enabled
             self.night_mode_callback(True)
         else:  # Night mode disabled
             self.night_mode_callback(False)
 
-    """
-    Calls the callback function specified in the save_callback class attribute, if
-    available, when the save_button has been clicked.
-    """
+
     """
     Updates the text that is displayed in the footer_label widget
     """
     def set_status(self, message):
         self.footer_label.configure(text=message)
     
-    """
-    Call only once upon initialization to add widgets to the frame
-    """
 
+    """Calls the send message call back function."""
     def send_message(self):
         if self._send_callback is not None:
             self._send_callback()
@@ -198,6 +197,9 @@ class Footer(tk.Frame):
         self.footer_label = tk.Label(master=self, text="Ready.")
         self.footer_label.pack(fill=tk.BOTH, side=tk.RIGHT, padx=5)
 
+
+"""Custom class that uses the threading module to create a thread that automatically 
+retrieves new messages and updates them to the Profile class."""
 class Refresh(Thread):
     def __init__(self, main_app):
         Thread.__init__(self)
@@ -210,7 +212,7 @@ class Refresh(Thread):
             self.main_app.update()
         
 
-
+"""Main App that is a subclass of tk.Frame. Is the main class of this file."""
 class MainApp(tk.Frame):
     def __init__(self, root):
         tk.Frame.__init__(self, root)
@@ -229,7 +231,8 @@ class MainApp(tk.Frame):
         self.refresh = Refresh(self)
 
         self._draw()
-    
+
+    """Is called from the Refresh class every few seconds."""
     def update(self):
         retreived_messages = self.messgener.retrieve_new()
         messages = retreived_messages[1]
@@ -243,10 +246,9 @@ class MainApp(tk.Frame):
             self.save_profile()
 
 
-    """
-    Creates a new DSU file when the 'New' menu item is clicked.
-    """
 #----------------------------------------------new profile--------------------------#
+    """Checks if the user exists and if so, will create a file path using their username,
+    stored in the profiles folder. Then it will load the profile."""
     def user_exist_checker(self,usr):
         self.file_path = f'profiles/{usr}.dsu' #usr = the self.username
         try:
@@ -257,19 +259,18 @@ class MainApp(tk.Frame):
         except custom_class.UnExpected_Error:
             print("An unexpected error occurred, please try again")
 
-
+    """Creates a file in the profiles folder for storing Profile data."""
     def create_path(self,file_path):
-        """Creates a file in the profiles folder for storing Profile data."""
         with open(file_path,'x') as f:
             pass
 
+    """Creates a new profile."""
     def create_new_profile(self):
         self.user_profile = Profile.Profile()
         self.user_profile.dsuserver = self.dsu_server
         self.user_profile.username = self.username
         self.user_profile.password = self.password
         self.save_profile()
-        print('called')
 #----------------------------------------------new profile--------------------------#
     """
     Opens an existing DSU file when the 'Open' menu item is clicked and loads the profile
@@ -280,6 +281,7 @@ class MainApp(tk.Frame):
         self.clear_profile()  # Clears the current profile so that the new profile could be loaded
         self.user_profile.load_profile(self.file_path)  # Sets all the profile attributes to the self.user_profile object
 
+    """Clears the profile attributes."""
     def clear_profile(self):
         """Clears the previous profile when loading in a new one."""
         self.user_profile = Profile.Profile(dsuserver=None, username=None, password=None)
@@ -287,21 +289,19 @@ class MainApp(tk.Frame):
         self.user_profile._posts = []
         self.user_profile.contacts = {}
 
-
+    """Saves the profile using the given file path attribute."""
     def save_profile(self):
         self.user_profile.save_profile(self.file_path)
 
+    """Sends the message to the server"""
     def send_message_to_server(self): # callback to footer, so when user click send, the msg in entry will send to 
         #message widget
-        print("check if token is populate in messenger",self.messgener.token)
         if self.messgener.token is None: # when the the username is not set up 
             self.messgener = DirectMessenger(dsuserver="168.235.86.101",username=self.username,password=self.password)
             self.messgener.token = self.messgener.join()
         else:
             self.recipient = self.body.contact_name
-        
-        print("current contact name: ",self.body.contact_name)
-        print("who is the recipient: ",self.recipient)
+    
 
         self.messgener.send(self.body.get_text_entry(),self.recipient)
         Time = str(time.time())
@@ -326,7 +326,7 @@ class MainApp(tk.Frame):
 
 #-------------------------------------configure account screen---------------------------------->>
 
-
+    """Add to contacts attribute."""
     def add_to_contacts(self, messages:list) -> dict:
         contacts = self.user_profile.contacts
         for msg in messages:
@@ -337,6 +337,7 @@ class MainApp(tk.Frame):
                 contacts[reciepient].append(msg)
         return contacts
 
+    """Is called when the 'ok' button is pressed."""
     def ok_login(self): #TODO for final project
         self.dsu_server = str(self.DS_Server_Address.get())
         self.username =str(self.Username.get())
@@ -359,12 +360,13 @@ class MainApp(tk.Frame):
         
     
 
-
+    """Is called when the cancel button is called."""
     def cancel(self):
         self.account_screen.destroy()
 #-------------------------------------configure account screen---------------------------------->>
 
 #-------------------------------------add friend screen----------------------------------------->>
+    """Is called when the 'ok' button is pressed when adding a friend."""
     def ok_add_f(self): #TODO for final project
         New_message = {}
         #self.body.reset_ui()
@@ -375,18 +377,17 @@ class MainApp(tk.Frame):
         New_message["timestamp"] = Time
         New_message["message"] = "New friend"
         new_list.append(New_message)
-        print("line 364",str(self.add_name.get()))
         self.user_profile.contacts[f'{str(self.add_name.get())}'] = new_list
         self.save_profile()
         self.body.set_contact_msg(self.user_profile.contacts)
         self.add_f_screen.destroy()
 
-
+    """Is called when the 'ok' button is pressed when adding a friend."""
     def cancel_add_f(self):
         self.add_f_screen.destroy()
 #-------------------------------------add friend screen----------------------------------------->>
 
-    # for collecting the ip, username, passwords from user
+    """for collecting the ip, username, passwords from user"""
     def configure_account(self):
         self.account_screen = Toplevel(self.root)
         self.account_screen.title('Configure Account')
@@ -422,7 +423,7 @@ class MainApp(tk.Frame):
         except custom_class.UnExpected_Error:
             print("An unexpected error occurred, please try again")
 
-    # add user by username 
+    """Add user by username."""
     def add_friends(self):
         self.add_f_screen = Toplevel(self.root)
         self.add_f_screen.title("Add a friend")
@@ -453,6 +454,7 @@ class MainApp(tk.Frame):
 
         self.clear_ui()
         
+    """Clears the UI"""
     def clear_ui(self):
         self.body.pack_forget()
         self.footer.pack_forget()

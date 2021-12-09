@@ -23,8 +23,8 @@ Xiaofan Lu
 
 
 Important to know:
-To close the program, go to the options tab and click the exit button. 
-Make sure to click on the contact name in the tree to update the GUI
+- To close the program, go to the options tab and click the exit button. 
+- Make sure to click on the contact name in the tree to update the GUI
 
 
 Sources and References:
