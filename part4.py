@@ -19,6 +19,7 @@ import sys
 from threading import Thread
 import time
 from ds_messenger import DirectMessenger
+import custom_class
 #from NaClProfile import NaClProfile
 
 # lucas
@@ -260,6 +261,9 @@ class MainApp(tk.Frame):
             self.create_new_profile()
         except FileExistsError:
             self.load_profile()
+        except custom_class.UnExpected_Error:
+            print("An unexpected error occurred, please try again")
+
 
     def create_path(self,file_path):
         """Creates a file in the profiles folder for storing Profile data."""
@@ -353,27 +357,36 @@ class MainApp(tk.Frame):
         self.account_screen = Toplevel(self.root)
         self.account_screen.title('Configure Account')
         self.account_screen.geometry("250x180") # width x height
+        try:
+            self.DS_Server_Address = StringVar()
+            self.Username = StringVar()
+            self.Password = StringVar()
 
-        self.DS_Server_Address = StringVar()
-        self.Username = StringVar()
-        self.Password = StringVar()
+            Label(self.account_screen,text='DS Server Address').pack()
+            Entry(self.account_screen,textvariable=self.DS_Server_Address ).pack()
 
-        Label(self.account_screen,text='DS Server Address').pack()
-        Entry(self.account_screen,textvariable=self.DS_Server_Address ).pack()
+            Label(self.account_screen,text='Username').pack()
+            Entry(self.account_screen,textvariable=self.Username ).pack()
 
-        Label(self.account_screen,text='Username').pack()
-        Entry(self.account_screen,textvariable=self.Username ).pack()
+            Label(self.account_screen,text='Password').pack()
+            Entry(self.account_screen,textvariable=self.Password ).pack()
 
-        Label(self.account_screen,text='Password').pack()
-        Entry(self.account_screen,textvariable=self.Password ).pack()
-
-        Button(self.account_screen,text = "Ok", width= 15, 
-            height=1,
-            command= self.ok_login).pack(side=tk.LEFT,pady = 5, padx =5)
-        Button(self.account_screen,text = "cancel", width= 15, 
-            height=1,
-            command = self.cancel).pack(side=tk.RIGHT,pady = 5, padx =5)
-
+            Button(self.account_screen,text = "Ok", width= 15, 
+                height=1,
+                command= self.ok_login).pack(side=tk.LEFT,pady = 5, padx =5)
+            Button(self.account_screen,text = "cancel", width= 15, 
+                height=1,
+                command = self.cancel).pack(side=tk.RIGHT,pady = 5, padx =5)
+            if len(self.Password.get()) < 2:
+                raise custom_class.Password_Short
+            if len(self.Password.get()) > 100:
+                raise custom_class.Password_Too_Long
+        except custom_class.Password_Short:
+            print("Password is too short, please input more than 5 characters")
+        except custom_class.Password_Too_Long:
+            print("Password is too long, please input less than 100 characters")
+        except custom_class.UnExpected_Error:
+            print("An unexpected error occurred, please try again")
 
     # add user by username 
     def add_friends(self):
