@@ -8,12 +8,17 @@
 # 
 # The following module provides a graphical user interface shell for the DSP journaling program.
 
+# Site source https://thispointer.com/create-a-thread-using-class-in-python/
 
 
 import tkinter as tk
 from tkinter import Button, Entry, Label, StringVar, Text, Toplevel, ttk, filedialog
 from tkinter.constants import BOTH, END, RADIOBUTTON, RIGHT, TRUE
 import Profile
+import sys
+from threading import Thread
+import time
+from ds_messenger import DirectMessenger
 #from NaClProfile import NaClProfile
 
 # lucas
@@ -30,7 +35,7 @@ class Body(tk.Frame):
         self.root = root
         self.night_mode = night_mode
         self._select_callback = select_callback
-
+        self.contact_name = None # for send check, if None, message will send to default messgener. 
         self._name = []
         self._body_contact = {}# because the call back doesn't work
         # After all initialization is complete, call the _draw method to pack the widgets
@@ -195,7 +200,17 @@ class Footer(tk.Frame):
         self.footer_label = tk.Label(master=self, text="Ready.")
         self.footer_label.pack(fill=tk.BOTH, side=tk.RIGHT, padx=5)
 
+class Refresh(Thread):
+    def __init__(self, main_app):
+        Thread.__init__(self)
+        self.main_app = main_app
+        self.keep_running = True
 
+    def run(self):
+        while self.keep_running:
+            time.sleep(2)
+            self.main_app.update()
+        
 
 
 """
@@ -207,13 +222,26 @@ class MainApp(tk.Frame):
     def __init__(self, root):
         tk.Frame.__init__(self, root)
         self.user_profile = Profile.Profile() # for final project
+        self.messgener = DirectMessenger()
+        # without any setting
+        #self.token = None
         self.root = root
         self.username = ''
         self.password=""
         self.dsu_server=''
         self.is_night_mode = False
+        
         self.recipient = None
+
+        self.refresh = Refresh(self)
+        self.refresh.start()
+
         self._draw()
+    
+    def update(self):
+        #retrieve_message()
+        print('hi')
+        pass
 
     """
     Creates a new DSU file when the 'New' menu item is clicked.
@@ -254,13 +282,6 @@ class MainApp(tk.Frame):
         self.clear_ui()
         self.clear_profile()  # Clears the current profile so that the new profile could be loaded
         self.user_profile.load_profile(self.file_path)  # Sets all the profile attributes to the self.user_profile object
-        if self.check_password(self.password):  # Passes in the password the user entered in the tkinter entry widget
-            print('ACCESS GRANTED')
-            #logged_in = True?
-            # Show all the contacts saved in the profile
-        else:
-            print('ACCESS DENIED')  #  Wrong passwrod
-
 
     def clear_profile(self):
         """Clears the previous profile when loading in a new one."""
@@ -268,27 +289,27 @@ class MainApp(tk.Frame):
         self.user_profile.bio = ''
         self.user_profile._posts = []
         self.user_profile.contacts = {}
-    
 
-    def check_password(self, password) -> bool:
-        """Returns True if the given password is equal to the profile's password.
-        """
-        return password == self.user_profile.password
-
-    """
-    Saves the text currently in the entry_editor widget to the active DSU file.
-    """
-
-            
-            
 
     def save_profile(self):
         self.user_profile.save_profile(self.file_path)
 
     def send_message_to_server(self): # callback to footer, so when user click send, the msg in entry will send to 
         #message widget
-        print(self.body.get_text_entry())
-        print(self.body.contact_name,' ')
+        print("check if token is populate in messenger",self.messgener.token)
+        if self.messgener.token is None: # when the the username is not set up 
+            self.messgener = DirectMessenger(dsuserver="168.235.86.101",username="xiaof",password="1234")
+            self.messgener.token = self.messgener.join()
+        if self.body.contact_name is None:# if none send messenger to yourself
+            self.recipient = 'xiaof' # for testing purpose, default contact name
+        else:
+            self.recipient = self.body.contact_name
+        print("current contact name: ",self.body.contact_name)
+        print("who is the recipient: ",self.recipient)
+
+        self.messgener.send(self.body.get_text_entry(),self.recipient)
+        #for test purpose
+        print("line 294 see if message come in",self.messgener.retrieve_all())
         self.body.set_text_entry('')
 
 
@@ -296,6 +317,8 @@ class MainApp(tk.Frame):
     Closes the program when the 'Close' menu item is clicked.
     """
     def close(self):
+        self.refresh.keep_running = False
+        sys.exit()
         self.root.destroy()
 
 
@@ -304,6 +327,8 @@ class MainApp(tk.Frame):
         self.dsu_server = str(self.DS_Server_Address.get())
         self.username =str(self.Username.get())
         self.password = str(self.Password.get())
+        self.messgener = DirectMessenger(dsuserver="168.235.86.101",username=self.username,password=self.password)
+        self.messgener.token = self.messgener.join()
         self.user_exist_checker(self.username)
         self.body.set_contact_msg(self.user_profile.contacts)#<<<<<<<<<<<<<<<<<<<<<<<<<,
         self.account_screen.destroy()
@@ -315,9 +340,11 @@ class MainApp(tk.Frame):
 
 #-------------------------------------add friend screen----------------------------------------->>
     def ok_add_f(self): #TODO for final project
-        pass
+        print(self.contact_name.get())
+        self.add_f_screen.destroy()
 
-    def cancel_a_f(self):
+
+    def cancel_add_f(self):
         self.add_f_screen.destroy()
 #-------------------------------------add friend screen----------------------------------------->>
 
@@ -354,10 +381,10 @@ class MainApp(tk.Frame):
         self.add_f_screen.title("Add a friend")
         self.add_f_screen.geometry("250x100")
 
-        self.cont_name = StringVar()
+        self.contact_name = StringVar()
 
         Label(self.add_f_screen,text='Please type the username of your new contact').pack()
-        Entry(self.add_f_screen,textvariable=self.cont_name ).pack()
+        Entry(self.add_f_screen,textvariable=self.contact_name ).pack()
 
         Button(self.add_f_screen,text = "Ok", width= 15, 
             height=1,
@@ -365,7 +392,7 @@ class MainApp(tk.Frame):
 
         Button(self.add_f_screen,text = "cancel", width= 15, 
             height=1,
-            command = self.cancel_a_f).pack(side=tk.RIGHT,pady = 5, padx =5)
+            command = self.cancel_add_f).pack(side=tk.RIGHT,pady = 5, padx =5)
         pass
     
     """
@@ -384,19 +411,14 @@ class MainApp(tk.Frame):
         self.footer.pack_forget()
         self._draw()
 
-
-
     def _draw(self):
         # Build a menu and add it to the root frame.
         menu_bar = tk.Menu(self.root)
         self.root['menu'] = menu_bar
         menu_file = tk.Menu(menu_bar)
-        menu_bar.add_cascade(menu=menu_file, label='File')
-        menu_file.add_command(label='New', command=self.create_new_profile)
+        menu_bar.add_cascade(menu=menu_file, label='Options')
+        menu_file.add_command(label='Exit', command=self.close)
         menu_file.add_separator()
-        menu_file.add_command(label='Open...', command=self.load_profile)
-        menu_file.add_separator()
-        menu_file.add_command(label='Close', command=self.close)
         menu_setting = tk.Menu(menu_bar)
         menu_bar.add_cascade(menu= menu_setting,label = 'Setting')
         menu_setting.add_command(label='Configure Account', command=self.configure_account)

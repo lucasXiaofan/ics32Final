@@ -28,8 +28,8 @@ class DirectMessenger:
     self.token = None
 
 
-  def join(self, dsuserver, username, password) -> str:
-     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client: # opening socket stream
+  def join(self) -> str:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client: # opening socket stream
       client.connect((server, port)) # connects to server and port passed to send function
     
       send = client.makefile('w') # to send
@@ -37,17 +37,16 @@ class DirectMessenger:
 
       print('client connected to', server,'on', port) 
 
-      json_msg = '{"join": {"username": "unittestwork" ,"password": "hellowrodl1223", "token": ""}}'
+      json_msg = f'{{"join": {{"username": "{self.username}","password": "{self.password}", "token": ""}}}}'
+
+      #json_msg = '{"join": {"username": "xiaof" ,"password": "1234", "token": ""}}'
               
       send.write(json_msg + '\r\n')
       send.flush() #cant leave anything behind 
 
       respo = recv.readline()
       
-      dm = DirectMessenger()
-      dm.token = part1_protocol.extract_json(respo)[0]
-
-      return dm.token
+      return part1_protocol.extract_json(respo)[0]
   
 
   def send(self, message:str, recipient:str) -> bool:
@@ -64,7 +63,7 @@ class DirectMessenger:
       self.timestamp = Profile.time.time()
       
       try:
-        direct_msg = '{"token": "' + dm.token + '", "directmessage": {"entry":"' + self.message + '", "recipient": "' + self.recipient + '", "timestamp": "' + str(self.timestamp) + '"}}' # posts user's desired message
+        direct_msg = '{"token": "' + self.token + '", "directmessage": {"entry":"' + self.message + '", "recipient": "' + self.recipient + '", "timestamp": "' + str(self.timestamp) + '"}}' # posts user's desired message
         response = True
         send.write(direct_msg + '\r\n')
         send.flush() #cant leave anything behind 
@@ -85,7 +84,7 @@ class DirectMessenger:
 
       print('client connected to', server,'on', port) 
     # returns a list of DirectMessage objects containing all new messages
-      new_msg = '{"token": "' + dm.token + '", "directmessage": "new" }'
+      new_msg = '{"token": "' + self.token + '", "directmessage": "new" }'
       send.write(new_msg + '\r\n')
       send.flush() #cant leave anything behind 
       respo = recv.readline()
@@ -102,7 +101,7 @@ class DirectMessenger:
 
       print('client connected to', server,'on', port) 
     # returns a list of DirectMessage objects containing all messages
-      all_msg = '{"token": "' + dm.token + '", "directmessage": "all" }'
+      all_msg = '{"token": "' + self.token + '", "directmessage": "all" }'
       send.write(all_msg + '\r\n')
       send.flush() #cant leave anything behind 
       respo = recv.readline()
@@ -112,15 +111,5 @@ class DirectMessenger:
 
 #--------------------------- commands to call these functions -----------------------------------#
 
-dm = DirectMessenger(dsuserver=server, username="unittest123", password="passwrod1234")
-dm.token = DirectMessenger.join(DirectMessenger, server, dm.username, dm.password) 
-#DirectMessenger.send(DirectMessenger, "Whats up man", dm.username)
-#DirectMessenger.retrieve_all(DirectMessenger)
-# DirectMessenger.retrieve_new(DirectMessenger)
-
-# To do:
-# First populate DirectMessenger class with username, dsuserver, and password
-# Call join function to collect token and populate DirectMessenger token attribute
-# Now you have access to using the send, retrieve_all, and retrieve_new functions
-# I recommend retrieving all messages to display on the GUI and to add new messages to the user's dsu file
-# To call send function you need a message and the username of the person you're sending to 
+#dm = DirectMessenger(dsuserver=server, username="unittest123", password="passwrod1234")
+#dm.token = DirectMessenger.join(DirectMessenger, server, dm.username, dm.password) 
