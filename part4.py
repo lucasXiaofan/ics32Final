@@ -300,8 +300,8 @@ class MainApp(tk.Frame):
     Closes the program when the 'Close' menu item is clicked.
     """
     def close(self):
-        self.root.destroy()
         sys.exit()
+        self.root.destroy()
 
 
 #-------------------------------------configure account screen---------------------------------->>
@@ -397,12 +397,9 @@ class MainApp(tk.Frame):
         menu_bar = tk.Menu(self.root)
         self.root['menu'] = menu_bar
         menu_file = tk.Menu(menu_bar)
-        menu_bar.add_cascade(menu=menu_file, label='File')
-        menu_file.add_command(label='New', command=self.create_new_profile)
+        menu_bar.add_cascade(menu=menu_file, label='Options')
+        menu_file.add_command(label='Exit', command=self.close)
         menu_file.add_separator()
-        menu_file.add_command(label='Open...', command=self.load_profile)
-        menu_file.add_separator()
-        menu_file.add_command(label='Close', command=self.close)
         menu_setting = tk.Menu(menu_bar)
         menu_bar.add_cascade(menu= menu_setting,label = 'Setting')
         menu_setting.add_command(label='Configure Account', command=self.configure_account)
