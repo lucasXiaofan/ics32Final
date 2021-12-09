@@ -209,12 +209,15 @@ class MainApp(tk.Frame):
     def __init__(self, root):
         tk.Frame.__init__(self, root)
         self.user_profile = Profile.Profile() # for final project
-        self.messgener = DirectMessenger(dsuserver="168.235.86.101",username="xiaof",password="1234") # without any setting
+        self.messgener = DirectMessenger()
+        # without any setting
+        #self.token = None
         self.root = root
         self.username = ''
         self.password=""
         self.dsu_server=''
         self.is_night_mode = False
+        
         self.recipient = None
         self._draw()
 
@@ -284,12 +287,17 @@ class MainApp(tk.Frame):
 
     def send_message_to_server(self): # callback to footer, so when user click send, the msg in entry will send to 
         #message widget
+        print("check if token is populate in messenger",self.messgener.token)
+        if self.messgener.token is None: # when the the username is not set up 
+            self.messgener = DirectMessenger(dsuserver="168.235.86.101",username="xiaof",password="1234")
+            self.messgener.token = self.messgener.join()
         if self.body.contact_name is None:# if none send messenger to yourself
             self.recipient = 'xiaof' # for testing purpose, default contact name
         else:
             self.recipient = self.body.contact_name
-        print(self.body.get_text_entry())
-        print(self.body.contact_name ,"current contact name")
+        print("current contact name: ",self.body.contact_name)
+        print("who is the recipient: ",self.recipient)
+
         self.messgener.send(self.body.get_text_entry(),self.recipient)
         #for test purpose
         print("line 294 see if message come in",self.messgener.retrieve_all())
@@ -309,7 +317,8 @@ class MainApp(tk.Frame):
         self.dsu_server = str(self.DS_Server_Address.get())
         self.username =str(self.Username.get())
         self.password = str(self.Password.get())
-        self.token = self.messgener.join(username= self.username,password= self.password)
+        self.messgener = DirectMessenger(dsuserver="168.235.86.101",username=self.username,password=self.password)
+        self.messgener.token = self.messgener.join()
         self.user_exist_checker(self.username)
         self.body.set_contact_msg(self.user_profile.contacts)#<<<<<<<<<<<<<<<<<<<<<<<<<,
         self.account_screen.destroy()
