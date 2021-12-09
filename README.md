@@ -22,7 +22,9 @@ Xiaofan Lu
 * __custom_class__: This file is used for the required of having at least one custom exception class. It is for password to alert a user making an account that it is either too short or too long of a password. It tells the user to type between 2 and 100 characters. 
 
 
-Important to know: To close the program, go to the options tab and click the exit button. 
+Important to know:
+To close the program, go to the options tab and click the exit button. 
+Make sure to click on the contact name in the tree to update the GUI
 
 
 Sources and References:
