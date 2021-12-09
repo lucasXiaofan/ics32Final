@@ -230,14 +230,12 @@ class MainApp(tk.Frame):
         self.recipient = None
 
         self.refresh = Refresh(self)
-        self.refresh.start()
 
         self._draw()
     
     def update(self):
-        #retrieve_message()
-    
-        pass
+        retreived_messages = self.messgener.retrieve_new()
+        print(retreived_messages)
 
     """
     Creates a new DSU file when the 'New' menu item is clicked.
@@ -306,7 +304,7 @@ class MainApp(tk.Frame):
         New_message["timestamp"] = Time
         New_message["message"] = self.body.get_text_entry()
         
-        self.user_profile.contacts['{}'.format(self.body.contact_name)].append(New_message)
+        self.user_profile.contacts[f'{self.body.contact_name}'].append(New_message)
         self.save_profile()
         self.body.set_text_entry('')
 
@@ -347,6 +345,10 @@ class MainApp(tk.Frame):
         self.save_profile()
 
         self.body.set_contact_msg(self.user_profile.contacts)#<<<<<<<<<<<<<<<<<<<<<<<<<,
+
+        self.refresh.start()
+
+
         self.account_screen.destroy()
         
     
@@ -359,6 +361,7 @@ class MainApp(tk.Frame):
 #-------------------------------------add friend screen----------------------------------------->>
     def ok_add_f(self): #TODO for final project
         New_message = {}
+        #self.body.reset_ui()
         Time = time.time()
         New_message={}
         new_list = []
@@ -366,8 +369,8 @@ class MainApp(tk.Frame):
         New_message["timestamp"] = Time
         New_message["message"] = "New friend"
         new_list.append(New_message)
-        print("line 364",self.contact_name)
-        self.user_profile.contacts[f'{self.contact_name}'] = new_list
+        print("line 364",str(self.add_name.get()))
+        self.user_profile.contacts[f'{str(self.add_name.get())}'] = new_list
         self.save_profile()
         self.body.set_contact_msg(self.user_profile.contacts)
         self.add_f_screen.destroy()
@@ -419,10 +422,10 @@ class MainApp(tk.Frame):
         self.add_f_screen.title("Add a friend")
         self.add_f_screen.geometry("250x100")
 
-        self.contact_name = StringVar().get()
+        self.add_name = StringVar()
 
         Label(self.add_f_screen,text='Please type the username of your new contact').pack()
-        Entry(self.add_f_screen,textvariable=self.contact_name ).pack()
+        Entry(self.add_f_screen,textvariable=self.add_name ).pack()
 
         Button(self.add_f_screen,text = "Ok", width= 15, 
             height=1,
