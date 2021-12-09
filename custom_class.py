@@ -11,6 +11,3 @@ class Password_Too_Long(CustomError):
 
 class UnExpected_Error(CustomError):
     pass
-
-class Choose_A_Receipient():
-    pass
