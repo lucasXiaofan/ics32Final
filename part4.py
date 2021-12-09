@@ -12,7 +12,7 @@
 
 
 import tkinter as tk
-from tkinter import Button, Entry, Label, StringVar, Text, Toplevel, ttk, filedialog
+from tkinter import Button, Entry, Label, Message, StringVar, Text, Toplevel, ttk, filedialog
 from tkinter.constants import BOTH, END, RADIOBUTTON, RIGHT, TRUE
 import Profile
 import sys
@@ -235,7 +235,7 @@ class MainApp(tk.Frame):
     
     def update(self):
         #retrieve_message()
-        print('hi')
+    
         pass
 
     """
@@ -287,10 +287,8 @@ class MainApp(tk.Frame):
         #message widget
         print("check if token is populate in messenger",self.messgener.token)
         if self.messgener.token is None: # when the the username is not set up 
-            self.messgener = DirectMessenger(dsuserver="168.235.86.101",username="xiaof",password="1234")
+            self.messgener = DirectMessenger(dsuserver="168.235.86.101",username=self.username,password=self.password)
             self.messgener.token = self.messgener.join()
-        if self.body.contact_name is None:# if none send messenger to yourself
-            self.recipient = 'xiaof' # for testing purpose, default contact name
         else:
             self.recipient = self.body.contact_name
         
@@ -298,10 +296,14 @@ class MainApp(tk.Frame):
         print("who is the recipient: ",self.recipient)
 
         self.messgener.send(self.body.get_text_entry(),self.recipient)
-        #for test purpose
-        self.messgener.retrieve_new()
-        print("line 294 see if message come in",)
-        print(self.user_profile.contacts[''])
+        Time = str(time.time())
+        New_message = {}
+        New_message["from"] = self.username
+        New_message["timestamp"] = Time
+        New_message["message"] = self.body.get_text_entry()
+        
+        self.user_profile.contacts['{}'.format(self.body.contact_name)].append(New_message)
+        self.save_profile()
         self.body.set_text_entry('')
 
 
@@ -352,7 +354,18 @@ class MainApp(tk.Frame):
 
 #-------------------------------------add friend screen----------------------------------------->>
     def ok_add_f(self): #TODO for final project
-        print(self.contact_name.get())
+        New_message = {}
+        Time = time.time()
+        New_message={}
+        new_list = []
+        New_message["from"] = f'{self.username}'
+        New_message["timestamp"] = Time
+        New_message["message"] = "New friend"
+        new_list.append(New_message)
+        print("line 364",self.contact_name)
+        self.user_profile.contacts[f'{self.contact_name}'] = new_list
+        self.save_profile()
+        self.body.set_contact_msg(self.user_profile.contacts)
         self.add_f_screen.destroy()
 
 
@@ -393,7 +406,7 @@ class MainApp(tk.Frame):
         self.add_f_screen.title("Add a friend")
         self.add_f_screen.geometry("250x100")
 
-        self.contact_name = StringVar()
+        self.contact_name = StringVar().get()
 
         Label(self.add_f_screen,text='Please type the username of your new contact').pack()
         Entry(self.add_f_screen,textvariable=self.contact_name ).pack()
@@ -405,7 +418,7 @@ class MainApp(tk.Frame):
         Button(self.add_f_screen,text = "cancel", width= 15, 
             height=1,
             command = self.cancel_add_f).pack(side=tk.RIGHT,pady = 5, padx =5)
-        pass
+    
     
     """
     A callback function for responding to changes to the night mode button.
