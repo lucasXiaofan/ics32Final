@@ -26,5 +26,5 @@ Important to know: To close the program, go to the options tab and click the exi
 
 
 Sources and References:
-Site source https://thispointer.com/create-a-thread-using-class-in-python/
-Unittest https://docs.python.org/3/library/unittest.html
+Refresh class source https://thispointer.com/create-a-thread-using-class-in-python/
+Unittest source https://docs.python.org/3/library/unittest.html
