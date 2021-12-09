@@ -10,7 +10,7 @@ class TestDS_Messenger(unittest.TestCase):
     def setUp(self):
         print("In setUp()")
         self.token1 = "31292afb-8505-4421-b112-e18bc0938642"
-
+        self.token2 = "23433ber-3434-6454-g343-y34rb4230453"
 
     def test_join(self):
         print("In test_join()")
@@ -43,6 +43,10 @@ class TestDS_Messenger(unittest.TestCase):
         self.assertTrue(ds_messenger.DirectMessenger.send(ds_messenger.DirectMessenger, "Hello World", "unittestwork"))
         self.assertIsNotNone(ds_messenger.DirectMessenger.retrieve_all)
         self.assertIsNotNone(ds_messenger.DirectMessenger.retrieve_new)
+        ds_messenger.DirectMessenger.token = self.token2
+        self.assertTrue(ds_messenger.DirectMessenger.send(ds_messenger.DirectMessenger, "Hello World", "unittestwork"))
+        self.assertIsNotNone(ds_messenger.DirectMessenger.retrieve_all)
+        self.assertIsNotNone(ds_messenger.DirectMessenger.retrieve_new)
 
     def test_Message_class(self):
         print("In test_message_class()")
@@ -56,6 +60,7 @@ class TestDS_Messenger(unittest.TestCase):
     def tearDown(self):
         print("In tearDown()")
         del self.token1
+        del self.token2
     
 
 if __name__ == "__main__":
