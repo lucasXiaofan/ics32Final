@@ -26,10 +26,7 @@ import custom_class
 # ics 32 final project
 
 
-"""
-A subclass of tk.Frame that is responsible for drawing all of the widgets
-in the body portion of the root frame.
-"""
+
 class Body(tk.Frame):
     def __init__(self, root, select_callback=None, night_mode=False):
         tk.Frame.__init__(self, root)
