@@ -38,8 +38,6 @@ class DirectMessenger:
       print('client connected to', server,'on', port) 
 
       json_msg = f'{{"join": {{"username": "{self.username}","password": "{self.password}", "token": ""}}}}'
-
-      #json_msg = '{"join": {"username": "xiaof" ,"password": "1234", "token": ""}}'
               
       send.write(json_msg + '\r\n')
       send.flush() #cant leave anything behind 
