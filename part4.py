@@ -210,7 +210,6 @@ class MainApp(tk.Frame):
         tk.Frame.__init__(self, root)
         self.user_profile = Profile.Profile() # for final project
         self.messgener = DirectMessenger(dsuserver="168.235.86.101",username="xiaof",password="1234") # without any setting
-        
         self.root = root
         self.username = ''
         self.password=""
@@ -310,7 +309,7 @@ class MainApp(tk.Frame):
         self.dsu_server = str(self.DS_Server_Address.get())
         self.username =str(self.Username.get())
         self.password = str(self.Password.get())
-        self.messgener.join(username= self.username, password=self.password )
+        self.token = self.messgener.join(username= self.username,password= self.password)
         self.user_exist_checker(self.username)
         self.body.set_contact_msg(self.user_profile.contacts)#<<<<<<<<<<<<<<<<<<<<<<<<<,
         self.account_screen.destroy()
