@@ -197,6 +197,16 @@ class Footer(tk.Frame):
         self.footer_label = tk.Label(master=self, text="Ready.")
         self.footer_label.pack(fill=tk.BOTH, side=tk.RIGHT, padx=5)
 
+class Refresh:
+    def __init__(self, main_app):
+        self.main_app = main_app
+        self.main_app.user_profile
+        print(self.main_app.user_profile)
+    
+    def wait(self):
+        #time.sleep(5)
+        #self.main_app.
+        pass
 
 
 
@@ -217,7 +227,12 @@ class MainApp(tk.Frame):
         self.dsu_server=''
         self.is_night_mode = False
         self.recipient = None
+        self.refresh = Refresh(self)
         self._draw()
+    
+    def _update(self):
+        #retrieve_message()
+        pass
 
     """
     Creates a new DSU file when the 'New' menu item is clicked.
