@@ -329,10 +329,13 @@ class MainApp(tk.Frame):
         self.password = str(self.Password.get())
         self.messgener = DirectMessenger(dsuserver="168.235.86.101",username=self.username,password=self.password)
         self.messgener.token = self.messgener.join()
+
         self.user_exist_checker(self.username)
         self.body.set_contact_msg(self.user_profile.contacts)#<<<<<<<<<<<<<<<<<<<<<<<<<,
         self.account_screen.destroy()
         
+    
+
 
     def cancel(self):
         self.account_screen.destroy()
