@@ -15,6 +15,8 @@ from tkinter import Button, Entry, Label, StringVar, Text, Toplevel, ttk, filedi
 from tkinter.constants import BOTH, END, RADIOBUTTON, RIGHT, TRUE
 import Profile
 import sys
+from threading import Thread
+import time
 from ds_messenger import DirectMessenger
 #from NaClProfile import NaClProfile
 
@@ -197,17 +199,16 @@ class Footer(tk.Frame):
         self.footer_label = tk.Label(master=self, text="Ready.")
         self.footer_label.pack(fill=tk.BOTH, side=tk.RIGHT, padx=5)
 
-class Refresh:
+class Refresh(Thread):
     def __init__(self, main_app):
+        Thread.__init__(self)
         self.main_app = main_app
-        self.main_app.user_profile
-        print(self.main_app.user_profile)
-    
-    def wait(self):
-        #time.sleep(5)
-        #self.main_app.
-        pass
 
+    def run(self):
+        while True:
+            time.sleep(2)
+            self.main_app.update()
+        
 
 
 """
@@ -228,10 +229,12 @@ class MainApp(tk.Frame):
         self.is_night_mode = False
         self.recipient = None
         self.refresh = Refresh(self)
+        self.refresh.start()
         self._draw()
     
-    def _update(self):
+    def update(self):
         #retrieve_message()
+        print('hi')
         pass
 
     """
