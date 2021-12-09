@@ -14,7 +14,7 @@ from collections import namedtuple
 
 def extract_json(json_msg:str): # helps get important information from response
   '''
-  Call the json.loads function on a json string and convert it to a DataTuple object
+  Call the json.loads function on a json string and convert it to a list 
   
   '''
   response_list = []
