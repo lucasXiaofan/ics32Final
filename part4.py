@@ -8,6 +8,7 @@
 # 
 # The following module provides a graphical user interface shell for the DSP journaling program.
 
+# Site source https://thispointer.com/create-a-thread-using-class-in-python/
 
 
 import tkinter as tk
@@ -203,9 +204,10 @@ class Refresh(Thread):
     def __init__(self, main_app):
         Thread.__init__(self)
         self.main_app = main_app
+        self.keep_running = True
 
     def run(self):
-        while True:
+        while self.keep_running:
             time.sleep(2)
             self.main_app.update()
         
@@ -228,8 +230,10 @@ class MainApp(tk.Frame):
         self.dsu_server=''
         self.is_night_mode = False
         self.recipient = None
+
         self.refresh = Refresh(self)
         self.refresh.start()
+
         self._draw()
     
     def update(self):
@@ -319,6 +323,7 @@ class MainApp(tk.Frame):
     Closes the program when the 'Close' menu item is clicked.
     """
     def close(self):
+        self.refresh.keep_running = False
         sys.exit()
         self.root.destroy()
 
