@@ -11,13 +11,13 @@
 import json
 from collections import namedtuple
 
-response_list = []
 
 def extract_json(json_msg:str): # helps get important information from response
   '''
   Call the json.loads function on a json string and convert it to a DataTuple object
   
   '''
+  response_list = []
   try:
     json_obj = json.loads(json_msg)
     if json_obj["response"]["type"] == "ok": 
@@ -35,18 +35,10 @@ def extract_json(json_msg:str): # helps get important information from response
         print(message)
     else:
       print(json_obj)
-    
+      user_token = None
 
 
   except json.JSONDecodeError:
     print("Json cannot be decoded.")
 
   return user_token, response_list # easy to use in client module, if i need just message or just token 
-
-  
-
-
-
-
-
-
