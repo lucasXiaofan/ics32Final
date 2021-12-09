@@ -8,7 +8,35 @@ x.save_profile('profiles/xiaof.dsu')
 from ds_messenger import DirectMessenger
 server = "168.235.86.101" #dsu server is hardcoded rn but it shouldnt be 
 
-dm = DirectMessenger(dsuserver=server, username="unittest123", password="passwrod1234")
+dm = DirectMessenger(dsuserver=server, username="xiaof", password="1234")
 print(dm.token)
 dm.token = dm.join() 
-print(dm.token)
+msg = dm.retrieve_all()
+key_name = []
+contacts = {}
+message_list = []
+def make_list(msg_dictionary,name):
+    message_list = []
+    for msg_dic2 in msg_dictionary:
+        if name == msg_dic2['from']:
+            message_list.append(msg_dic2)
+    return message_list
+
+for msg_dic in msg:
+    if msg_dic['from'] not in key_name:
+        key_name.append(msg_dic['from'])
+
+for name in key_name:
+    
+    list = make_list(msg,name)
+    contacts['{}'.format(name)] = list
+
+print(msg)
+
+"""print(contacts)
+print(len(contacts['brandonliu']))
+print(len(contacts['xiaof']))
+print(len(contacts['unittestwork']))"""
+
+
+
