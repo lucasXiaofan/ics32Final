@@ -351,6 +351,8 @@ class MainApp(tk.Frame):
         self.body.set_contact_msg(self.user_profile.contacts)#<<<<<<<<<<<<<<<<<<<<<<<<<,
         self.account_screen.destroy()
         
+    
+
 
     def cancel(self):
         self.account_screen.destroy()
