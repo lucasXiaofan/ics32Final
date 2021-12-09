@@ -282,13 +282,6 @@ class MainApp(tk.Frame):
         self.clear_ui()
         self.clear_profile()  # Clears the current profile so that the new profile could be loaded
         self.user_profile.load_profile(self.file_path)  # Sets all the profile attributes to the self.user_profile object
-        if self.check_password(self.password):  # Passes in the password the user entered in the tkinter entry widget
-            print('ACCESS GRANTED')
-            #logged_in = True?
-            # Show all the contacts saved in the profile
-        else:
-            print('ACCESS DENIED')  #  Wrong passwrod
-
 
     def clear_profile(self):
         """Clears the previous profile when loading in a new one."""
@@ -296,12 +289,6 @@ class MainApp(tk.Frame):
         self.user_profile.bio = ''
         self.user_profile._posts = []
         self.user_profile.contacts = {}
-    
-
-    def check_password(self, password) -> bool:
-        """Returns True if the given password is equal to the profile's password.
-        """
-        return password == self.user_profile.password
 
 
     def save_profile(self):
